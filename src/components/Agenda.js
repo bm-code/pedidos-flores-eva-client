@@ -1,9 +1,10 @@
 import Search from "./Search";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 
-export default function Agenda({ pedidos, setPedidos }) {
+export default function Agenda({ pedidos, setPedidos, title, orderType }) {
+
     // Toggle complete
     const toggleCompleted = function (id) {
         const newPedidos = [...pedidos];
@@ -62,8 +63,10 @@ export default function Agenda({ pedidos, setPedidos }) {
 
     // Edidtar pedido
     const [selected, setSelected] = useState('');
+
     const selectedOrder = pedidos.findIndex(element => element._id === selected);
     const initialState = {
+        orderType: '',
         createDate: '',
         deliveryDate: '',
         receiverName: '',
@@ -81,6 +84,7 @@ export default function Agenda({ pedidos, setPedidos }) {
     function setOrderDetails() {
         const success = document.querySelector('.alert');
         setForm({
+            orderType: pedidos[selectedOrder]?.orderType,
             createDate: formatDateToSystem(pedidos[selectedOrder]?.createDate.substring(0, 9)),
             deliveryDate: formatDateToSystem(pedidos[selectedOrder]?.deliveryDate).substring(0, 10),
             receiverName: pedidos[selectedOrder]?.receiverName,
@@ -109,6 +113,7 @@ export default function Agenda({ pedidos, setPedidos }) {
         const index = newPedidos.findIndex(element => element._id === id);
         form.createDate = new Date().toLocaleString() + ""
         newPedidos[index]._id = id
+        newPedidos[index].orderType = form.orderType;
         // newPedidos[index].createDate = form.createDate;
         newPedidos[index].deliveryDate = form.deliveryDate;
         newPedidos[index].receiverName = form.receiverName;
@@ -167,11 +172,24 @@ export default function Agenda({ pedidos, setPedidos }) {
         });
         window.print();
         document.body.innerHTML = page;
+        document.querySelectorAll('.dropdown-menu').forEach(element => {
+            element.style.display = 'auto';
+        });
     }
 
+    useEffect(() => {
+        let isMounted = true;
+        fetch('http://localhost:5500/api/orders')
+            .then(res => res.json())
+            .then(data => {
+                if (isMounted) setPedidos(data)
+            })
+        return () => { isMounted = false };
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
     if (pedidos.length === 0) {
-        return <div class="spinner-grow" role="status">
-            <span class="visually-hidden">Loading...</span>
+        return <div className="spinner-grow" role="status">
+            <span className="visually-hidden">Loading...</span>
         </div>
     } else {
         return (
@@ -215,10 +233,10 @@ export default function Agenda({ pedidos, setPedidos }) {
                 </div>
                 {/* modal editar pedido */}
                 <div className="row col-12 m-auto" style={{ 'height': 'fit-content' }}>
-                    <h2 className="mb-3">Pedidos pendientes</h2>
+                    <h2 className="mb-3">{title} pendientes</h2>
                     <Search term={term} setTerm={setTerm} />
                     {
-                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === false).map(({ deliveryDate, receiverName, phone, address, comment, product, clientName, clientPhone, completed, _id }, index) => {
+                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === false).filter(pedido => pedido.orderType === orderType).map(({ orderType, deliveryDate, receiverName, phone, address, comment, product, clientName, clientPhone, completed, _id }, index) => {
                             return <ul id={_id + 'print'} key={_id} className="list-group col-xl-4 col-lg-4 col-md-6 mb-3 p-0 p-md-1 p-lg-2">
                                 <li className="list-group-item active">
                                     <b style={{ cursor: "pointer" }} onClick={() => setShowFullOrderNumber(!showFullOrderNumber)}>Pedido Nº</b> {_id ? formatOrderNumber(_id) : ''}
@@ -237,6 +255,7 @@ export default function Agenda({ pedidos, setPedidos }) {
 
 
                                 </li>
+                                <li className="list-group-item"><b>Tipo de pedido:</b> {orderType}</li>
                                 <li className="list-group-item"><b>Fecha de entrega:</b> {formatDateToUser(deliveryDate)}</li>
                                 <li className="list-group-item"><b>Nombre del destinatario:</b> {receiverName}</li>
                                 <li className="list-group-item"><b>Dirección de entrega:</b> {address}</li>
@@ -255,12 +274,28 @@ export default function Agenda({ pedidos, setPedidos }) {
                     <h2 className="mb-3">Pedidos completados</h2>
                     <button className="btn btn-link mb-3" onClick={() => setShowCompleted(!showCompleted)}>{showCompleted ? 'Ocultar pedidos completados' : 'Mostrar pedidos completados'}</button>
                     {
-                        pedidos.filter(searchingTerm(term)).filter(pedido => pedido.completed === true).map(({ deliveryDate, receiverName, phone, address, comment, product, clientName, clientPhone, completed, _id }, index) => {
+                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === true).filter(pedido => pedido.orderType === orderType).map(({ orderType, deliveryDate, receiverName, phone, address, comment, product, clientName, clientPhone, completed, _id }, index) => {
                             return <div className="col-12">
                                 {
-                                    showCompleted ? <ul key={_id} className="list-group col-12 mb-3 p-0 p-md-1 p-lg-2">
-                                        <li className="list-group-item active"><b>Pedido Nº</b> {_id}
+                                    showCompleted ? <ul id={_id + 'print'} key={_id} className="list-group col-xl-4 col-lg-4 col-md-6 mb-3 p-0 p-md-1 p-lg-2">
+                                        <li className="list-group-item active">
+                                            <b style={{ cursor: "pointer" }} onClick={() => setShowFullOrderNumber(!showFullOrderNumber)}>Pedido Nº</b> {_id ? formatOrderNumber(_id) : ''}
+
+
+                                            {/* Menu button */}
+                                            <div style={{ display: 'inline', marginLeft: '10px' }} className="dropdown">
+                                                <button onClick={() => setSelected(_id)} className={`text-white dropdown-toggle btn btn-link`} type="button" data-toggle="dropdown" aria-expanded="false"></button>
+                                                <div className="dropdown-menu" >
+                                                    <button onClick={setOrderDetails} className="dropdown-item" data-toggle="modal" data-target="#editOrderModal">Editar pedido</button>
+                                                    <button onClick={() => printOrder(_id)} className="dropdown-item" >Imprimir pedido</button>
+                                                    <button onClick={deleteOrder} className="dropdown-item text-danger" >Borrar pedido</button>
+                                                </div>
+                                            </div>
+                                            {/* ...Menu button */}
+
+
                                         </li>
+                                        <li className="list-group-item"><b>Tipo de pedido:</b> {orderType}</li>
                                         <li className="list-group-item"><b>Fecha de entrega:</b> {formatDateToUser(deliveryDate)}</li>
                                         <li className="list-group-item"><b>Nombre del destinatario:</b> {receiverName}</li>
                                         <li className="list-group-item"><b>Dirección de entrega:</b> {address}</li>
@@ -269,7 +304,7 @@ export default function Agenda({ pedidos, setPedidos }) {
                                         <li className="list-group-item"><b>Nombre del cliente:</b> {clientName}</li>
                                         <li className="list-group-item"><b>Teléfono del cliente:</b> {clientPhone}</li>
                                         <li className="list-group-item"><b>Comentarios o notas:</b> {comment}</li>
-                                        <li className="list-group-item list-group-item-success"><b>Estado del pedido: </b>{completed ? 'COMPLETADO' : 'NO COMPLETADO'}</li>
+                                        <li className="list-group-item"><b>Estado del pedido: </b>{completed ? 'COMPLETADO' : 'NO COMPLETADO'}</li>
                                         <button className="btn btn-danger" id={_id} onClick={event => toggleCompleted(event.target.id)}>Desmarcar como completado</button>
                                     </ul> : ''
                                 }

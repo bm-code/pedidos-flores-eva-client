@@ -4,6 +4,7 @@ import axios from 'axios';
 export default function Formulario({ setPedidos }) {
 
     const initialState = {
+        orderType: '',
         createDate: '',
         deliveryDate: '',
         receiverName: '',
@@ -18,7 +19,7 @@ export default function Formulario({ setPedidos }) {
     const [form, setForm] = useState(initialState);
 
     function handleInput(event) {
-        setForm({ ...form, [event.target.name]: event.target.value });
+        event.target.value ? setForm({ ...form, [event.target.name]: event.target.value }) : setForm({ ...form, [event.target.name]: event.target.id })
     }
 
     function registrarPedido(event) {
@@ -28,6 +29,7 @@ export default function Formulario({ setPedidos }) {
             form.createDate = new Date().toLocaleString() + ""
             form.deliveryDate = form.deliveryDate.toLocaleString() + ""
             setForm(initialState);
+            console.log(form);
             setPedidos(pedidosActual => [...pedidosActual, form]);
 
             // Realizamos el POST a la base de datos
@@ -51,6 +53,20 @@ export default function Formulario({ setPedidos }) {
         <div className="col-12 bg-light rounded">
             {/* <h2 className="mb-3">Registrar nuevo pedido</h2> */}
             <form onSubmit={registrarPedido}>
+
+                <div className="form-check">
+                    <input onChange={handleInput} className="form-check-input" type="radio" name="orderType" id="pedido" value='pedido' />
+                    <label className="form-check-label" htmlFor="pedido">
+                        Pedido normal
+                    </label>
+                </div>
+                <div className="form-check">
+                    <input onChange={handleInput} className="form-check-input" type="radio" name="orderType" id="corona" value='corona' />
+                    <label className="form-check-label" htmlFor="corona" >
+                        Corona
+                    </label>
+                </div >
+
                 <input type="date" className="form-control mb-3" name='deliveryDate' value={form.deliveryDate} placeholder="Fecha de entrega" onChange={handleInput} />
 
                 <input type="text" className="form-control mb-3" name='receiverName' value={form.receiverName} placeholder="Nombre del destinatario" onChange={handleInput} />
@@ -68,7 +84,7 @@ export default function Formulario({ setPedidos }) {
                 <textarea onChange={handleInput} className="form-control mb-3" name="comment" value={form.comment} placeholder="Comentarios del pedido" cols="30" rows="3"></textarea>
 
                 <button type="submit" className="btn btn-success">Registrar pedido</button>
-            </form>
-        </div>
+            </form >
+        </div >
     )
 }
