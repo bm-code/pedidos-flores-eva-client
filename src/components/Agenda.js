@@ -70,14 +70,17 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
         createDate: '',
         deliveryDate: '',
         receiverName: '',
+        customerType: '',
         address: '',
         phone: '',
         product: '',
+        productDetails: '',
         clientName: '',
         clientPhone: '',
         comment: '',
         completed: false,
-        delete: false
+        delete: false,
+        paid: false
     }
     const [form, setForm] = useState(initialState);
 
@@ -88,20 +91,23 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
             createDate: formatDateToSystem(pedidos[selectedOrder]?.createDate.substring(0, 9)),
             deliveryDate: formatDateToSystem(pedidos[selectedOrder]?.deliveryDate).substring(0, 10),
             receiverName: pedidos[selectedOrder]?.receiverName,
+            customerType: pedidos[selectedOrder]?.customerType,
             address: pedidos[selectedOrder]?.address,
             phone: pedidos[selectedOrder]?.phone,
             product: pedidos[selectedOrder]?.product,
+            productDetails: pedidos[selectedOrder]?.productDetails,
             clientName: pedidos[selectedOrder]?.clientName,
             clientPhone: pedidos[selectedOrder]?.clientPhone,
             comment: pedidos[selectedOrder]?.comment,
             completed: pedidos[selectedOrder]?.completed,
-            delete: pedidos[selectedOrder]?.delete
+            delete: pedidos[selectedOrder]?.delete,
+            paid: pedidos[selectedOrder]?.paid
         });
         success.classList.add('d-none')
     }
 
     function handleInput(event) {
-        setForm({ ...form, [event.target.name]: event.target.value });
+        event.target.value ? setForm({ ...form, [event.target.name]: event.target.value }) : setForm({ ...form, [event.target.name]: event.target.id })
     }
 
     function editarPedido(event) {
@@ -117,14 +123,17 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
         // newPedidos[index].createDate = form.createDate;
         newPedidos[index].deliveryDate = form.deliveryDate;
         newPedidos[index].receiverName = form.receiverName;
+        newPedidos[index].customerType = form.customerType;
         newPedidos[index].address = form.address;
         newPedidos[index].phone = form.phone;
         newPedidos[index].product = form.product;
+        newPedidos[index].productDetails = form.productDetails;
         newPedidos[index].clientName = form.clientName;
         newPedidos[index].clientPhone = form.clientPhone;
         newPedidos[index].comment = form.comment;
         newPedidos[index].completed = form.completed;
         newPedidos[index].delete = form.delete;
+        newPedidos[index].paid = form.paid;
         if (newPedidos[index].deliveryDate) {
             setPedidos(newPedidos)
             axios.post('http://localhost:5500/api/editar', newPedidos[index])
@@ -135,6 +144,9 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
                     console.log(err);
                 });
             success.classList.replace('d-none', 'alert-success');
+            setTimeout(() => {
+                window.location.reload()
+            }, 500);
         } else {
             alert('Debes seleccionar la fecha de entrega');
         }
@@ -188,7 +200,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     if (pedidos.length === 0) {
-        return <div className="spinner-grow" role="status">
+        return <div className="spinner-grow mt-5" role="status">
             <span className="visually-hidden">Loading...</span>
         </div>
     } else {
@@ -206,19 +218,48 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
                             </div>
                             <div className="modal-body">
                                 <form onSubmit={editarPedido}>
+                                    <div className="form-check">
+                                        <input onChange={handleInput} className="form-check-input" type="radio" name="orderType" id="edit-pedido" value='pedido' />
+                                        <label className="form-check-label" htmlFor="edit-pedido">
+                                            Pedido normal
+                                        </label>
+                                    </div>
+                                    <div className="form-check">
+                                        <input onChange={handleInput} className="form-check-input" type="radio" name="orderType" id="edit-corona" value='corona' />
+                                        <label className="form-check-label" htmlFor="edit-corona" >
+                                            Corona
+                                        </label>
+                                    </div >
                                     <input type="date" className="form-control mb-3" name='deliveryDate' value={form.deliveryDate} placeholder="Fecha de entrega" onChange={handleInput} />
 
-                                    <input type="text" className="form-control mb-3" name='receiverName' value={form.receiverName} placeholder="Nombre del destinatario" onChange={handleInput} />
+                                    {form.orderType === 'corona' ? <input type="text" className="form-control mb-3" name='receiverName' value={form.receiverName} placeholder="Nombre del difunto" onChange={handleInput} /> : <input type="text" className="form-control mb-3" name='receiverName' value={form.receiverName} placeholder="Nombre del destinatario" onChange={handleInput} />}
 
-                                    <input type="text" className="form-control mb-3" name='address' value={form.address} placeholder="Dirección de entrega" onChange={handleInput} />
+                                    {form.orderType === 'corona' ? <input type="text" className="form-control mb-3" name='customerType' value={form.customerType} placeholder="Encarga particular/tanatorio" onChange={handleInput} /> : null}
 
-                                    <input type="number" className="form-control mb-3" name='phone' value={form.phone} placeholder="Introduce el teléfono" onChange={handleInput} />
+                                    {form.orderType === 'corona' ? <input type="text" className="form-control mb-3" name='address' value={form.address} placeholder="Nombre del tanatorio" onChange={handleInput} /> : <input type="text" className="form-control mb-3" name='address' value={form.address} placeholder="Dirección de entrega" onChange={handleInput} />}
+
+                                    {form.orderType === 'corona' ? <input type="number" className="form-control mb-3" name='phone' value={form.phone} placeholder="Teléfono de contacto en el tanatorio" onChange={handleInput} /> : <input type="number" className="form-control mb-3" name='phone' value={form.phone} placeholder="Teléfono del destinatario" onChange={handleInput} />}
 
                                     <input type="text" className="form-control mb-3" name='product' value={form.product} placeholder="Producto" onChange={handleInput} />
+
+                                    {form.orderType === 'corona' ? <input type="text" className="form-control mb-3" name='productDetails' value={form.productDetails} placeholder="Detalles del producto (Mensaje en cinta)" onChange={handleInput} /> : null}
 
                                     <input type="text" className="form-control mb-3" name='clientName' value={form.clientName} placeholder="Nombre del cliente" onChange={handleInput} />
 
                                     <input type="number" className="form-control mb-3" name='clientPhone' value={form.clientPhone} placeholder="Teléfono del cliente" onChange={handleInput} />
+
+                                    <div className="form-check">
+                                        <input onChange={handleInput} className="form-check-input" type="radio" name="paid" id="edit-pedido-no-pagado" value={false} />
+                                        <label className="form-check-label" htmlFor="edit-pedido-no-pagado">
+                                            No pagado
+                                        </label>
+                                    </div>
+                                    <div className="form-check">
+                                        <input onChange={handleInput} className="form-check-input" type="radio" name="paid" id="edit-pedido-pagado" value={true} />
+                                        <label className="form-check-label" htmlFor="edit-pedido-pagado" >
+                                            Pagado
+                                        </label>
+                                    </div >
 
                                     <textarea onChange={handleInput} className="form-control mb-3" name="comment" value={form.comment} placeholder="Comentarios del pedido" cols="30" rows="10"></textarea>
 
@@ -232,11 +273,11 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
                     </div>
                 </div>
                 {/* modal editar pedido */}
-                <div className="row col-12 m-auto" style={{ 'height': 'fit-content' }}>
+                <div className="row col-12 m-auto mt-5" style={{ 'height': 'fit-content' }}>
                     <h2 className="mb-3">{title} pendientes</h2>
                     <Search term={term} setTerm={setTerm} />
                     {
-                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === false).filter(pedido => pedido.orderType === orderType).map(({ orderType, deliveryDate, receiverName, phone, address, comment, product, clientName, clientPhone, completed, _id }, index) => {
+                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === false).filter(pedido => pedido.orderType === orderType).map(({ orderType, deliveryDate, receiverName, customerType, phone, address, comment, product, productDetails, clientName, clientPhone, completed, paid, _id }, index) => {
                             return <ul id={_id + 'print'} key={_id} className="list-group col-xl-4 col-lg-4 col-md-6 mb-3 p-0 p-md-1 p-lg-2">
                                 <li className="list-group-item active">
                                     <b style={{ cursor: "pointer" }} onClick={() => setShowFullOrderNumber(!showFullOrderNumber)}>Pedido Nº</b> {_id ? formatOrderNumber(_id) : ''}
@@ -257,21 +298,23 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
                                 </li>
                                 <li className="list-group-item"><b>Tipo de pedido:</b> {orderType}</li>
                                 <li className="list-group-item"><b>Fecha de entrega:</b> {formatDateToUser(deliveryDate)}</li>
-                                <li className="list-group-item"><b>Nombre del destinatario:</b> {receiverName}</li>
-                                <li className="list-group-item"><b>Dirección de entrega:</b> {address}</li>
-                                <li className="list-group-item"><b>Teléfono del destinatario:</b> {phone}</li>
+                                <li className="list-group-item"><b>{orderType === 'corona' ? 'Nombre del difunto:' : 'Nombre del destinatario'}</b> {receiverName}</li>
+                                <li className="list-group-item"><b>{orderType === 'corona' ? 'Nombre del tanatorio' : 'Dirección de entrega:'}</b> {address}</li>
+                                {orderType === 'corona' ? <li className="list-group-item"><b>Encarga: </b>{customerType}</li> : null}
+                                <li className="list-group-item"><b>{orderType === 'corona' ? 'Contacto tanatorio:' : 'Teléfono del destinatario:'}</b> {phone}</li>
                                 <li className="list-group-item"><b>Producto:</b> {product}</li>
+                                {orderType === 'corona' ? <li className="list-group-item"><b>Detalles del producto:</b> {productDetails}</li> : null}
                                 <li className="list-group-item"><b>Nombre del cliente:</b> {clientName}</li>
                                 <li className="list-group-item"><b>Teléfono del cliente:</b> {clientPhone}</li>
                                 <li className="list-group-item"><b>Comentarios o notas:</b> {comment}</li>
-                                <li className="list-group-item"><b>Estado del pedido: </b>{completed ? 'COMPLETADO' : 'NO COMPLETADO'}</li>
+                                <li className="list-group-item"><b>Pedido pagado: </b>{paid ? 'Sí' : 'No'}</li><li className="list-group-item"><b>Estado del pedido: </b>{completed ? 'COMPLETADO' : 'NO COMPLETADO'}</li>
                                 <button className="btn btn-success" id={_id} onClick={event => toggleCompleted(event.target.id)}>Marcar como completado</button>
                             </ul>
                         })
                     }
 
 
-                    <h2 className="mb-3">Pedidos completados</h2>
+                    <h2 className="mb-3">{title} completados</h2>
                     <button className="btn btn-link mb-3" onClick={() => setShowCompleted(!showCompleted)}>{showCompleted ? 'Ocultar pedidos completados' : 'Mostrar pedidos completados'}</button>
                     {
                         pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === true).filter(pedido => pedido.orderType === orderType).map(({ orderType, deliveryDate, receiverName, phone, address, comment, product, clientName, clientPhone, completed, _id }, index) => {

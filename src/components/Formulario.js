@@ -8,13 +8,16 @@ export default function Formulario({ setPedidos }) {
         createDate: '',
         deliveryDate: '',
         receiverName: '',
+        customerType: '',
         address: '',
         phone: '',
         product: '',
+        productDetails: '',
         clientName: '',
         clientPhone: '',
         comment: '',
         completed: false,
+        paid: false
     }
     const [form, setForm] = useState(initialState);
 
@@ -69,17 +72,34 @@ export default function Formulario({ setPedidos }) {
 
                 <input type="date" className="form-control mb-3" name='deliveryDate' value={form.deliveryDate} placeholder="Fecha de entrega" onChange={handleInput} />
 
-                <input type="text" className="form-control mb-3" name='receiverName' value={form.receiverName} placeholder="Nombre del destinatario" onChange={handleInput} />
+                {form.orderType === 'corona' ? <input type="text" className="form-control mb-3" name='receiverName' value={form.receiverName} placeholder="Nombre del difunto" onChange={handleInput} /> : <input type="text" className="form-control mb-3" name='receiverName' value={form.receiverName} placeholder="Nombre del destinatario" onChange={handleInput} />}
 
-                <input type="text" className="form-control mb-3" name='address' value={form.address} placeholder="Dirección de entrega" onChange={handleInput} />
+                {form.orderType === 'corona' ? <input type="text" className="form-control mb-3" name='customerType' value={form.customerType} placeholder="Encarga particular/tanatorio" onChange={handleInput} /> : null}
 
-                <input type="number" className="form-control mb-3" name='phone' value={form.phone} placeholder="Introduce el teléfono" onChange={handleInput} />
+                {form.orderType === 'corona' ? <input type="text" className="form-control mb-3" name='address' value={form.address} placeholder="Nombre del tanatorio" onChange={handleInput} /> : <input type="text" className="form-control mb-3" name='address' value={form.address} placeholder="Dirección de entrega" onChange={handleInput} />}
+
+                {form.orderType === 'corona' ? <input type="number" className="form-control mb-3" name='phone' value={form.phone} placeholder="Teléfono de contacto en el tanatorio" onChange={handleInput} /> : <input type="number" className="form-control mb-3" name='phone' value={form.phone} placeholder="Teléfono del destinatario" onChange={handleInput} />}
 
                 <input type="text" className="form-control mb-3" name='product' value={form.product} placeholder="Producto" onChange={handleInput} />
+
+                {form.orderType === 'corona' ? <input type="text" className="form-control mb-3" name='productDetails' value={form.productDetails} placeholder="Detalles del producto (Mensaje en cinta)" onChange={handleInput} /> : null}
 
                 <input type="text" className="form-control mb-3" name='clientName' value={form.clientName} placeholder="Nombre del cliente" onChange={handleInput} />
 
                 <input type="number" className="form-control mb-3" name='clientPhone' value={form.clientPhone} placeholder="Teléfono del cliente" onChange={handleInput} />
+
+                <div className="form-check">
+                    <input onChange={handleInput} className="form-check-input" type="radio" name="paid" id="pedido-no-pagado" value={false} />
+                    <label className="form-check-label" htmlFor="pedido-no-pagado">
+                        No pagado
+                    </label>
+                </div>
+                <div className="form-check">
+                    <input onChange={handleInput} className="form-check-input" type="radio" name="paid" id="pedido-pagado" value={true} />
+                    <label className="form-check-label" htmlFor="pedido-pagado" >
+                        Pagado
+                    </label>
+                </div >
 
                 <textarea onChange={handleInput} className="form-control mb-3" name="comment" value={form.comment} placeholder="Comentarios del pedido" cols="30" rows="3"></textarea>
 
