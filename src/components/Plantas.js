@@ -1,7 +1,10 @@
 import React from 'react'
+import Agenda from './Agenda'
 
-export default function Plantas() {
+export default function Plantas({ pedidos, setPedidos, title, orderType }) {
     return (
-        <div>Plantas</div>
+        <>
+            <Agenda pedidos={pedidos} setPedidos={setPedidos} title={title} orderType={orderType} />
+        </>
     )
 }

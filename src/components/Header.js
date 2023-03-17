@@ -13,7 +13,7 @@ import Plantas from './Plantas';
 
 export default function Header() {
     const [pedidosActual, setPedidos] = useState([]);
-
+    const location = window.location.pathname;
     return (
         <>
             <Router>
@@ -32,7 +32,12 @@ export default function Header() {
                                 </li>
                             </ul>
                             <button style={{ height: "fit-content" }} type="button" className="btn btn-primary col-4 d-none d-md-block" data-toggle="modal" data-target="#registerOrderModal">
-                                Registrar nuevo pedido
+                                {location === '/' &&
+                                    ' Registrar nuevo pedido'}
+                                {location === '/coronas' &&
+                                    ' Registrar nueva corona'}
+                                {location === '/plantas' &&
+                                    ' Registrar nuevo encargo de plantas'}
                             </button>
                             <button type="button" className="btn btn-primary d-md-none col-3 fixed-button" data-toggle="modal" data-target="#registerOrderModal">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-plus-lg" viewBox="0 0 16 16">
@@ -62,7 +67,7 @@ export default function Header() {
                 <Routes>
                     <Route exact activeClassName="active-route" path="/" element={<Agenda pedidos={pedidosActual} setPedidos={setPedidos} title='Pedidos' orderType='pedido' />} />
                     <Route exact activeClassName="active-route" path="/coronas" element={<AgendaCoronas pedidos={pedidosActual} setPedidos={setPedidos} title='Coronas' orderType='corona' />} />
-                    <Route exact activeClassName="active-route" path="/plantas" element={<Plantas />} />
+                    <Route exact activeClassName="active-route" path="/plantas" element={<Plantas pedidos={pedidosActual} setPedidos={setPedidos} title='Plantas' orderType='plantas' />} />
                 </Routes>
             </Router>
         </>

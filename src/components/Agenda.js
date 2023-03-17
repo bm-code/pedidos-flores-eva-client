@@ -1,9 +1,20 @@
 import Search from "./Search";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 
 export default function Agenda({ pedidos, setPedidos, title, orderType }) {
+
+    const location = useLocation().pathname;
+    let currentOrderType;
+    if (location === '/') {
+        currentOrderType = 'pedido'
+    } else if (location === '/coronas') {
+        currentOrderType = 'corona'
+    } else {
+        currentOrderType = 'plantas'
+    }
 
     // Toggle complete
     const toggleCompleted = function (id) {
@@ -24,7 +35,8 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
 
     // Formatear fecha
     const formatDateToUser = (date) => {
-        const separatedDate = date.split('-');
+        const separatedDate = date ? date?.split('-') : (new Date().toLocaleString + "");
+        // const separatedDate = date?.split('-');
         const year = separatedDate[0];
         const month = separatedDate[1];
         const day = separatedDate[2].slice(0, 2);
@@ -66,7 +78,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
 
     const selectedOrder = pedidos.findIndex(element => element._id === selected);
     const initialState = {
-        orderType: '',
+        orderType: currentOrderType,
         createDate: '',
         deliveryDate: '',
         receiverName: '',
@@ -194,10 +206,55 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
         fetch('http://localhost:5500/api/orders')
             .then(res => res.json())
             .then(data => {
-                if (isMounted) setPedidos(data)
+                if (isMounted) {
+                    setPedidos(data)
+                }
             })
         return () => { isMounted = false };
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    const cpy = pedidos;
+    console.log(cpy);
+
+    // const [sortedByCreateDate, setSortedByCreateDate] = useState(false)
+    const [sortedByDeliveryDate, setSortedByDeliveryDate] = useState(false)
+    const [sortedByReceiverName, setSortedByReceiverName] = useState(false)
+
+    const sortByDeliveryDateAsc = (arr) => {
+        setPedidos(pedidos)
+        setSortedByDeliveryDate(true)
+        // setSortedByCreateDate(false)
+        setSortedByReceiverName(false)
+        console.log(sortedByDeliveryDate);
+        return setPedidos(arr.slice().sort(function (a, b) {
+            if (a.deliveryDate === '' || b.deliveryDate === '') {
+                a.deliveryDate = 0;
+                b.deliveryDate = 0;
+            }
+            return a?.deliveryDate < b?.deliveryDate ? -1 : 1;
+        }));
+    }
+
+    // const sortByCreatedDateAsc = () => {
+    //     setSortedByDeliveryDate(false)
+    //     setSortedByCreateDate(true)
+    //     setSortedByReceiverName(false)
+    //     setPedidos(cpy)
+    // }
+
+    const sortByReceiverName = (arr) => {
+        setSortedByDeliveryDate(false)
+        // setSortedByCreateDate(false)
+        setSortedByReceiverName(true)
+        setPedidos(pedidos)
+        return setPedidos(arr.slice().sort((a, b) => {
+            if (a.receiverName.toLowerCase === '' || b.receiverName.toLowerCase === '') {
+                a.receiverName = 'aaa';
+                b.receiverName = 'aaa';
+            }
+            return a?.receiverName.toLowerCase() < b?.receiverName.toLowerCase() ? -1 : 1;
+        }));
+    }
+
 
     if (pedidos.length === 0) {
         return <div className="spinner-grow mt-5" role="status">
@@ -219,30 +276,46 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
                             <div className="modal-body">
                                 <form onSubmit={editarPedido}>
                                     <div className="form-check">
-                                        <input onChange={handleInput} className="form-check-input" type="radio" name="orderType" id="edit-pedido" value='pedido' />
+                                        <input onChange={handleInput} className="form-check-input" type="radio" name="orderType" id="edit-pedido"
+                                            value={currentOrderType}
+                                            checked readOnly />
                                         <label className="form-check-label" htmlFor="edit-pedido">
-                                            Pedido normal
+                                            {currentOrderType === 'pedido' &&
+                                                'Pedido normal'}
+                                            {currentOrderType === 'corona' &&
+                                                'Corona'}
+                                            {currentOrderType === 'plantas' &&
+                                                'Encargo de plantas'}
                                         </label>
                                     </div>
-                                    <div className="form-check">
-                                        <input onChange={handleInput} className="form-check-input" type="radio" name="orderType" id="edit-corona" value='corona' />
-                                        <label className="form-check-label" htmlFor="edit-corona" >
-                                            Corona
-                                        </label>
-                                    </div >
+
                                     <input type="date" className="form-control mb-3" name='deliveryDate' value={form.deliveryDate} placeholder="Fecha de entrega" onChange={handleInput} />
 
-                                    {form.orderType === 'corona' ? <input type="text" className="form-control mb-3" name='receiverName' value={form.receiverName} placeholder="Nombre del difunto" onChange={handleInput} /> : <input type="text" className="form-control mb-3" name='receiverName' value={form.receiverName} placeholder="Nombre del destinatario" onChange={handleInput} />}
+                                    {form.orderType === 'corona' &&
+                                        <input type="text" className="form-control mb-3" name='receiverName' value={form.receiverName} placeholder="Nombre del difunto" onChange={handleInput} />
+                                    }{form.orderType === 'pedido' &&
+                                        <input type="text" className="form-control mb-3" name='receiverName' value={form.receiverName} placeholder="Nombre del destinatario" onChange={handleInput} />}
 
                                     {form.orderType === 'corona' ? <input type="text" className="form-control mb-3" name='customerType' value={form.customerType} placeholder="Encarga particular/tanatorio" onChange={handleInput} /> : null}
 
-                                    {form.orderType === 'corona' ? <input type="text" className="form-control mb-3" name='address' value={form.address} placeholder="Nombre del tanatorio" onChange={handleInput} /> : <input type="text" className="form-control mb-3" name='address' value={form.address} placeholder="Dirección de entrega" onChange={handleInput} />}
+                                    {form.orderType === 'corona' &&
+                                        <input type="text" className="form-control mb-3" name='address' value={form.address} placeholder="Nombre del tanatorio" onChange={handleInput} />
+                                    }{form.orderType === 'pedido' &&
+                                        <input type="text" className="form-control mb-3" name='address' value={form.address} placeholder="Dirección de entrega" onChange={handleInput} />}
 
-                                    {form.orderType === 'corona' ? <input type="number" className="form-control mb-3" name='phone' value={form.phone} placeholder="Teléfono de contacto en el tanatorio" onChange={handleInput} /> : <input type="number" className="form-control mb-3" name='phone' value={form.phone} placeholder="Teléfono del destinatario" onChange={handleInput} />}
+                                    {form.orderType === 'corona' &&
+                                        <input type="number" className="form-control mb-3" name='phone' value={form.phone} placeholder="Teléfono de contacto en el tanatorio" onChange={handleInput} />
+                                    }{form.orderType === 'pedido' &&
+                                        <input type="number" className="form-control mb-3" name='phone' value={form.phone} placeholder="Teléfono del destinatario" onChange={handleInput} />
+                                    }
 
-                                    <input type="text" className="form-control mb-3" name='product' value={form.product} placeholder="Producto" onChange={handleInput} />
+                                    <input type="text" className="form-control mb-3" name='product' value={form.product} placeholder={form.orderType === 'plantas' ? 'Tipo de planta' : 'Producto'} onChange={handleInput} />
 
-                                    {form.orderType === 'corona' ? <input type="text" className="form-control mb-3" name='productDetails' value={form.productDetails} placeholder="Detalles del producto (Mensaje en cinta)" onChange={handleInput} /> : null}
+                                    {form.orderType === 'corona' &&
+                                        <input type="text" className="form-control mb-3" name='productDetails' value={form.productDetails} placeholder="Detalles del producto (Mensaje en cinta)" onChange={handleInput} />
+                                    }{form.orderType === 'plantas' &&
+                                        <input type="number" className="form-control mb-3" name='productDetails' value={form.productDetails} placeholder="Cantidad" onChange={handleInput} />
+                                    }
 
                                     <input type="text" className="form-control mb-3" name='clientName' value={form.clientName} placeholder="Nombre del cliente" onChange={handleInput} />
 
@@ -273,19 +346,29 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
                     </div>
                 </div>
                 {/* modal editar pedido */}
+
                 <div className="row col-12 m-auto mt-5" style={{ 'height': 'fit-content' }}>
                     <h2 className="mb-3">{title} pendientes</h2>
                     <Search term={term} setTerm={setTerm} />
-                    {
-                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === false).filter(pedido => pedido.orderType === orderType).map(({ orderType, deliveryDate, receiverName, customerType, phone, address, comment, product, productDetails, clientName, clientPhone, completed, paid, _id }, index) => {
-                            return <ul id={_id + 'print'} key={_id} className="list-group col-xl-4 col-lg-4 col-md-6 mb-3 p-0 p-md-1 p-lg-2">
-                                <li className="list-group-item active">
-                                    <b style={{ cursor: "pointer" }} onClick={() => setShowFullOrderNumber(!showFullOrderNumber)}>Pedido Nº</b> {_id ? formatOrderNumber(_id) : ''}
+                    <div className="btn-group mt-1" role="group" aria-label="Sort buttons">
+                        <button type="button" className={sortedByDeliveryDate ? "btn btn-info active text-white border" : "btn btn-light border"} onClick={() => sortByDeliveryDateAsc(pedidos)}>Ordernar por Fecha de entrega</button>
 
+                        {/* <button type="button" className={sortedByCreateDate ? "btn btn-info active text-white" : "btn btn-light"} onClick={sortByCreatedDateAsc}>Fecha de creación</button> */}
+
+                        <button type="button" className={sortedByReceiverName ? "btn btn-info active text-white border" : "btn btn-light border"} onClick={() => sortByReceiverName(pedidos)}>Ordenar por Nombre destinatario</button>
+                    </div>
+                    {
+                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === false).filter(pedido => pedido?.orderType === orderType).map(({ orderType, deliveryDate, createDate, receiverName, customerType, phone, address, comment, product, productDetails, clientName, clientPhone, completed, paid, _id }, index) => {
+                            return <ul id={_id + 'print'} key={_id} className="list-group col-xl-4 col-lg-4 col-md-6 mb-3 p-0 p-md-1 p-lg-2">
+                                <li className="list-group-item list-group-item-info d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p className="m-0"><b style={{ cursor: "pointer" }} onClick={() => setShowFullOrderNumber(!showFullOrderNumber)}>Pedido Nº</b> {_id ? formatOrderNumber(_id) : ''}</p>
+                                        <p className="m-0"><b>Creado:</b> {createDate.split(',')[0]}</p>
+                                    </div>
 
                                     {/* Menu button */}
                                     <div style={{ display: 'inline', marginLeft: '10px' }} className="dropdown">
-                                        <button onClick={() => setSelected(_id)} className={`text-white dropdown-toggle btn btn-link`} type="button" data-toggle="dropdown" aria-expanded="false"></button>
+                                        <button onClick={() => setSelected(_id)} className={`text-dark dropdown-toggle btn btn-link`} type="button" data-toggle="dropdown" aria-expanded="false"></button>
                                         <div className="dropdown-menu" >
                                             <button onClick={setOrderDetails} className="dropdown-item" data-toggle="modal" data-target="#editOrderModal">Editar pedido</button>
                                             <button onClick={() => printOrder(_id)} className="dropdown-item" >Imprimir pedido</button>
@@ -298,12 +381,22 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
                                 </li>
                                 <li className="list-group-item"><b>Tipo de pedido:</b> {orderType}</li>
                                 <li className="list-group-item"><b>Fecha de entrega:</b> {formatDateToUser(deliveryDate)}</li>
-                                <li className="list-group-item"><b>{orderType === 'corona' ? 'Nombre del difunto:' : 'Nombre del destinatario'}</b> {receiverName}</li>
-                                <li className="list-group-item"><b>{orderType === 'corona' ? 'Nombre del tanatorio' : 'Dirección de entrega:'}</b> {address}</li>
+
+                                {(orderType === 'corona' || orderType === 'pedido') &&
+                                    <li className="list-group-item"><b>{orderType === 'corona' ? 'Nombre del difunto:' : 'Nombre del destinatario'}</b> {receiverName}</li>}
+
+                                {(orderType === 'corona' || orderType === 'pedido') &&
+                                    <li className="list-group-item"><b>{orderType === 'corona' ? 'Nombre del tanatorio' : 'Dirección de entrega:'}</b> {address}</li>}
+
                                 {orderType === 'corona' ? <li className="list-group-item"><b>Encarga: </b>{customerType}</li> : null}
-                                <li className="list-group-item"><b>{orderType === 'corona' ? 'Contacto tanatorio:' : 'Teléfono del destinatario:'}</b> {phone}</li>
-                                <li className="list-group-item"><b>Producto:</b> {product}</li>
-                                {orderType === 'corona' ? <li className="list-group-item"><b>Detalles del producto:</b> {productDetails}</li> : null}
+
+                                {(orderType === 'corona' || orderType === 'pedido') &&
+                                    <li className="list-group-item"><b>{orderType === 'corona' ? 'Contacto tanatorio:' : 'Teléfono del destinatario:'}</b> {phone}</li>}
+
+                                <li className="list-group-item"><b>{orderType === 'plantas' ? 'Tipo de planta' : 'Producto:'}</b> {product}</li>
+
+                                {orderType === 'corona' || orderType === 'plantas' ? <li className="list-group-item"><b>{orderType === 'corona' ? 'Detalles del producto:' : 'Cantidad'}</b> {productDetails}</li> : null}
+
                                 <li className="list-group-item"><b>Nombre del cliente:</b> {clientName}</li>
                                 <li className="list-group-item"><b>Teléfono del cliente:</b> {clientPhone}</li>
                                 <li className="list-group-item"><b>Comentarios o notas:</b> {comment}</li>
@@ -316,44 +409,55 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
 
                     <h2 className="mb-3">{title} completados</h2>
                     <button className="btn btn-link mb-3" onClick={() => setShowCompleted(!showCompleted)}>{showCompleted ? 'Ocultar pedidos completados' : 'Mostrar pedidos completados'}</button>
-                    {
-                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === true).filter(pedido => pedido.orderType === orderType).map(({ orderType, deliveryDate, receiverName, phone, address, comment, product, clientName, clientPhone, completed, _id }, index) => {
-                            return <div className="col-12">
-                                {
-                                    showCompleted ? <ul id={_id + 'print'} key={_id} className="list-group col-xl-4 col-lg-4 col-md-6 mb-3 p-0 p-md-1 p-lg-2">
-                                        <li className="list-group-item active">
-                                            <b style={{ cursor: "pointer" }} onClick={() => setShowFullOrderNumber(!showFullOrderNumber)}>Pedido Nº</b> {_id ? formatOrderNumber(_id) : ''}
+                    <div className="row col-12 m-auto mt-5" style={{ 'height': 'fit-content' }}>
+                        {
+                            pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === true).filter(pedido => pedido?.orderType === orderType).map(({ orderType, deliveryDate, customerType, productDetails, paid, receiverName, phone, address, comment, product, clientName, clientPhone, completed, _id }, index) => {
+                                return showCompleted ? <ul id={_id + 'print'} key={_id} className="list-group col-xl-4 col-lg-4 col-md-6 mb-3 p-0 p-md-1 p-lg-2">
+                                    <li className="list-group-item active">
+                                        <b style={{ cursor: "pointer" }} onClick={() => setShowFullOrderNumber(!showFullOrderNumber)}>Pedido Nº</b> {_id ? formatOrderNumber(_id) : ''}
 
 
-                                            {/* Menu button */}
-                                            <div style={{ display: 'inline', marginLeft: '10px' }} className="dropdown">
-                                                <button onClick={() => setSelected(_id)} className={`text-white dropdown-toggle btn btn-link`} type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                                                <div className="dropdown-menu" >
-                                                    <button onClick={setOrderDetails} className="dropdown-item" data-toggle="modal" data-target="#editOrderModal">Editar pedido</button>
-                                                    <button onClick={() => printOrder(_id)} className="dropdown-item" >Imprimir pedido</button>
-                                                    <button onClick={deleteOrder} className="dropdown-item text-danger" >Borrar pedido</button>
-                                                </div>
+                                        {/* Menu button */}
+                                        <div style={{ display: 'inline', marginLeft: '10px' }} className="dropdown">
+                                            <button onClick={() => setSelected(_id)} className={`text-white dropdown-toggle btn btn-link`} type="button" data-toggle="dropdown" aria-expanded="false"></button>
+                                            <div className="dropdown-menu" >
+                                                <button onClick={setOrderDetails} className="dropdown-item" data-toggle="modal" data-target="#editOrderModal">Editar pedido</button>
+                                                <button onClick={() => printOrder(_id)} className="dropdown-item" >Imprimir pedido</button>
+                                                <button onClick={deleteOrder} className="dropdown-item text-danger" >Borrar pedido</button>
                                             </div>
-                                            {/* ...Menu button */}
+                                        </div>
+                                        {/* ...Menu button */}
 
 
-                                        </li>
-                                        <li className="list-group-item"><b>Tipo de pedido:</b> {orderType}</li>
-                                        <li className="list-group-item"><b>Fecha de entrega:</b> {formatDateToUser(deliveryDate)}</li>
-                                        <li className="list-group-item"><b>Nombre del destinatario:</b> {receiverName}</li>
-                                        <li className="list-group-item"><b>Dirección de entrega:</b> {address}</li>
-                                        <li className="list-group-item"><b>Teléfono del destinatario:</b> {phone}</li>
-                                        <li className="list-group-item"><b>Producto:</b> {product}</li>
-                                        <li className="list-group-item"><b>Nombre del cliente:</b> {clientName}</li>
-                                        <li className="list-group-item"><b>Teléfono del cliente:</b> {clientPhone}</li>
-                                        <li className="list-group-item"><b>Comentarios o notas:</b> {comment}</li>
-                                        <li className="list-group-item"><b>Estado del pedido: </b>{completed ? 'COMPLETADO' : 'NO COMPLETADO'}</li>
-                                        <button className="btn btn-danger" id={_id} onClick={event => toggleCompleted(event.target.id)}>Desmarcar como completado</button>
-                                    </ul> : ''
-                                }
-                            </div>
-                        })
-                    }
+                                    </li>
+                                    <li className="list-group-item"><b>Tipo de pedido:</b> {orderType}</li>
+                                    <li className="list-group-item"><b>Fecha de entrega:</b> {formatDateToUser(deliveryDate)}</li>
+
+                                    {(orderType === 'corona' || orderType === 'pedido') &&
+                                        <li className="list-group-item"><b>{orderType === 'corona' ? 'Nombre del difunto:' : 'Nombre del destinatario'}</b> {receiverName}</li>}
+
+                                    {(orderType === 'corona' || orderType === 'pedido') &&
+                                        <li className="list-group-item"><b>{orderType === 'corona' ? 'Nombre del tanatorio' : 'Dirección de entrega:'}</b> {address}</li>}
+
+                                    {orderType === 'corona' ? <li className="list-group-item"><b>Encarga: </b>{customerType}</li> : null}
+
+                                    {(orderType === 'corona' || orderType === 'pedido') &&
+                                        <li className="list-group-item"><b>{orderType === 'corona' ? 'Contacto tanatorio:' : 'Teléfono del destinatario:'}</b> {phone}</li>}
+
+                                    <li className="list-group-item"><b>{orderType === 'plantas' ? 'Tipo de planta' : 'Producto:'}</b> {product}</li>
+
+                                    {orderType === 'corona' || orderType === 'plantas' ? <li className="list-group-item"><b>{orderType === 'corona' ? 'Detalles del producto:' : 'Cantidad'}</b> {productDetails}</li> : null}
+
+                                    <li className="list-group-item"><b>Nombre del cliente:</b> {clientName}</li>
+                                    <li className="list-group-item"><b>Teléfono del cliente:</b> {clientPhone}</li>
+                                    <li className="list-group-item"><b>Comentarios o notas:</b> {comment}</li>
+                                    <li className="list-group-item"><b>Pedido pagado: </b>{paid ? 'Sí' : 'No'}</li><li className="list-group-item"><b>Estado del pedido: </b>{completed ? 'COMPLETADO' : 'NO COMPLETADO'}</li>
+                                    <button className="btn btn-danger" id={_id} onClick={event => toggleCompleted(event.target.id)}>Marcar como NO completado</button>
+                                </ul> : null
+
+                            })
+                        }
+                    </div>
                 </div>
             </>
         )
