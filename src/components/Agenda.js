@@ -211,7 +211,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
                 }
             })
         return () => { isMounted = false };
-    }, [pedidos]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
     const cpy = pedidos;
     console.log(cpy);
 
