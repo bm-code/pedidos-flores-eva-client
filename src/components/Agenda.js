@@ -203,7 +203,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
 
     useEffect(() => {
         let isMounted = true;
-        fetch('http://localhost:5500/api/orders')
+        fetch('https://pedidos-flores-eva-server-production.up.railway.app/api/orders')
             .then(res => res.json())
             .then(data => {
                 if (isMounted) {
