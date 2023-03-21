@@ -47,7 +47,7 @@ export default function Formulario({ setPedidos }) {
             setPedidos(pedidosActual => [...pedidosActual, form]);
 
             // Realizamos el POST a la base de datos
-            axios.post('http://localhost:5500/api/orders', form)
+            axios.post('https://pedidos-server.up.railway.app/api/orders', form)
                 .then(response => {
                     console.log(response);
                 })
