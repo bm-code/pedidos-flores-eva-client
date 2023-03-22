@@ -40,7 +40,6 @@ export default function Login({ login, setLogin }) {
         sessionStorage.setItem('name', login.name)
         sessionStorage.setItem('username', login.username)
         sessionStorage.setItem('email', login.email)
-        console.log(response);
       } else {
         console.log('error en el login');
       }
