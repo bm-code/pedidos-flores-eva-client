@@ -212,8 +212,6 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
             })
         return () => { isMounted = false };
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
-    const cpy = pedidos;
-    console.log(cpy);
 
     // const [sortedByCreateDate, setSortedByCreateDate] = useState(false)
     const [sortedByDeliveryDate, setSortedByDeliveryDate] = useState(false)
