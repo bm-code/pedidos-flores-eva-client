@@ -32,7 +32,7 @@ function App() {
 
     const subscription = await register.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: process.env.PUBLIC_KEY
+      applicationServerKey: process.env.PUBLIC_KEY,
     })
 
     await axios.post('https://pedidos-server.up.railway.app/subscriptions',
