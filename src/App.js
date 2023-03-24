@@ -2,7 +2,7 @@ import Header from "./components/Header";
 import Login from "./components/Login";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+import { initializeApp } from "firebase/app";
 
 function App() {
   // Import the functions you need from the SDKs you need
@@ -20,6 +20,7 @@ function App() {
   };
 
   // Initialize Firebase
+  // eslint-disable-next-line
   const app = initializeApp(firebaseConfig);
 
   const subscriptions = async () => {
