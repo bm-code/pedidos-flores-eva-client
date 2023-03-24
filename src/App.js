@@ -2,8 +2,25 @@ import Header from "./components/Header";
 import Login from "./components/Login";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
 
 function App() {
+  // Import the functions you need from the SDKs you need
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyBCvie-VuSbE2NDWxrdyidcanVmNzWRoNc",
+    authDomain: "pedidos-dd593.firebaseapp.com",
+    projectId: "pedidos-dd593",
+    storageBucket: "pedidos-dd593.appspot.com",
+    messagingSenderId: "753351769892",
+    appId: "1:753351769892:web:0c920d0f06c3f13d68fdb1"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
 
   const subscriptions = async () => {
 
@@ -21,7 +38,7 @@ function App() {
       subscription,
       {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         }
       })
     console.log('Suscrito');
