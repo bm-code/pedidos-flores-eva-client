@@ -40,7 +40,6 @@ function App() {
       {
         headers: {
           'Content-Type': 'application/json',
-          'options': firebaseConfig
         }
       })
     console.log('Suscrito');
