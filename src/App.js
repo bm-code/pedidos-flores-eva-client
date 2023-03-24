@@ -1,8 +1,36 @@
 import Header from "./components/Header";
 import Login from "./components/Login";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 function App() {
+
+  const subscriptions = async () => {
+
+    const register = await navigator.serviceWorker.register('./worker.js', {
+      scope: '/'
+    })
+    console.log('New service worker');
+
+    const subscription = await register.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: process.env.PUBLIC_KEY
+    })
+
+    await axios.post('http://localhost:5500/subscriptions',
+      subscription,
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+    console.log('Suscrito');
+  }
+
+  useEffect(() => {
+    subscriptions();
+  }, [])
+
 
   const [user, setUser] = useState({
     name: sessionStorage.getItem('name'),

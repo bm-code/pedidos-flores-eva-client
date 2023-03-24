@@ -54,9 +54,19 @@ export default function Formulario({ setPedidos }) {
                 .catch(err => {
                     console.log(err);
                 });
-            setTimeout(() => {
-                window.location.reload();
-            }, 500);
+            // setTimeout(() => {
+            //     window.location.reload();
+            // }, 200);
+
+            axios.post('http://localhost:5500/new-order', JSON.stringify({
+                message: `${form.orderType} creado para ${form.receiverName}`
+            })
+                ,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
         } else {
             alert('La fecha de entrega es obligatoria')
         }

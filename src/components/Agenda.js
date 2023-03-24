@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 
-
 export default function Agenda({ pedidos, setPedidos, title, orderType }) {
 
     const location = useLocation().pathname;
@@ -354,6 +353,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
                         {/* <button type="button" className={sortedByCreateDate ? "btn btn-info active text-white" : "btn btn-light"} onClick={sortByCreatedDateAsc}>Fecha de creación</button> */}
 
                         <button type="button" className={sortedByReceiverName ? "btn btn-info active text-white border" : "btn btn-light border"} onClick={() => sortByReceiverName(pedidos)}>Ordenar por Nombre destinatario</button>
+
                     </div>
                     {
                         pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === false).filter(pedido => pedido?.orderType === orderType).map(({ orderType, deliveryDate, createDate, receiverName, customerType, phone, address, comment, product, productDetails, clientName, clientPhone, completed, paid, _id }, index) => {
