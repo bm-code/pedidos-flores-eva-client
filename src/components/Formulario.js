@@ -58,7 +58,7 @@ export default function Formulario({ setPedidos }) {
             //     window.location.reload();
             // }, 200);
 
-            axios.post('http://localhost:5500/new-order', JSON.stringify({
+            axios.post('https://pedidos-server.up.railway.app/new-order', JSON.stringify({
                 message: `${form.orderType} creado para ${form.receiverName}`
             })
                 ,

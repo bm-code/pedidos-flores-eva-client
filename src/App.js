@@ -17,7 +17,7 @@ function App() {
       applicationServerKey: process.env.PUBLIC_KEY
     })
 
-    await axios.post('http://localhost:5500/subscriptions',
+    await axios.post('https://pedidos-server.up.railway.app/subscriptions',
       subscription,
       {
         headers: {
