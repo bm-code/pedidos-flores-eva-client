@@ -28,11 +28,10 @@ function App() {
     const register = await navigator.serviceWorker.register('./worker.js', {
       scope: '/'
     })
-    console.log('New service worker');
-
     const subscription = await register.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: process.env.PUBLIC_KEY,
+      applicationLocalKey: process.env.PUBLIC_KEY
     })
 
     await axios.post('https://pedidos-server.up.railway.app/subscriptions',
