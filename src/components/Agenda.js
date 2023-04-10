@@ -301,9 +301,9 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
                                         <input type="text" className="form-control mb-3" name='address' value={form.address} placeholder="Dirección de entrega" onChange={handleInput} />}
 
                                     {form.orderType === 'corona' &&
-                                        <input type="number" className="form-control mb-3" name='phone' value={form.phone} placeholder="Teléfono de contacto en el tanatorio" onChange={handleInput} />
+                                        <input type="tel" pattern="[0-9]{9}" className="form-control mb-3" name='phone' value={form.phone} placeholder="Teléfono de contacto en el tanatorio" onChange={handleInput} />
                                     }{form.orderType === 'pedido' &&
-                                        <input type="number" className="form-control mb-3" name='phone' value={form.phone} placeholder="Teléfono del destinatario" onChange={handleInput} />
+                                        <input type="tel" pattern="[0-9]{9}" className="form-control mb-3" name='phone' value={form.phone} placeholder="Teléfono del destinatario" onChange={handleInput} />
                                     }
 
                                     <input type="text" className="form-control mb-3" name='product' value={form.product} placeholder={form.orderType === 'plantas' ? 'Tipo de planta' : 'Producto'} onChange={handleInput} />
@@ -316,7 +316,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
 
                                     <input type="text" className="form-control mb-3" name='clientName' value={form.clientName} placeholder="Nombre del cliente" onChange={handleInput} />
 
-                                    <input type="number" className="form-control mb-3" name='clientPhone' value={form.clientPhone} placeholder="Teléfono del cliente" onChange={handleInput} />
+                                    <input type="tel" pattern="[0-9]{9}" className="form-control mb-3" name='clientPhone' value={form.clientPhone} placeholder="Teléfono del cliente" onChange={handleInput} />
 
                                     <div className="form-check">
                                         <input onChange={handleInput} className="form-check-input" type="radio" name="paid" id="edit-pedido-no-pagado" value={false} />

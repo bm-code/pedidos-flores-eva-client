@@ -13,8 +13,8 @@ code {
 }
 
 
-  .dropdown-menu.show {
-    transform: translate3d(-120px, 38px, 0px)!important;
+.dropdown-menu.show {
+  transform: translate3d(-120px, 38px, 0px) !important;
 }
 
 .fixed-button {
@@ -22,4 +22,18 @@ code {
   bottom: 25px;
   right: 25px;
   z-index: 999;
+}
+
+/* Eliminar control de los inputs number */
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=tel] {
+  -moz-appearance: textfield;
 }
