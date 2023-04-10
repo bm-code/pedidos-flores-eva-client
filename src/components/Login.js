@@ -4,12 +4,15 @@ import axios from 'axios';
 import logo from '../assets/logo.svg'
 
 export default function Login({ login, setLogin }) {
+
   const initialState = {
     username: '',
     password: ''
   }
+
   const [datos, setDatos] = useState(initialState)
   const [loading, setLoading] = useState(false)
+  const [loginError, setLoginError] = useState(false);
 
   const handleInputChange = (e) => {
     let { name, value } = e.target;
@@ -22,20 +25,26 @@ export default function Login({ login, setLogin }) {
     if (datos.username === '' || datos.password === '') {
       console.log('No enviar');
     } else {
-      let res = await axios.post('https://pedidos-server.up.railway.app/api/login', datos);
-      if (!datos) {
-        setLoading(true)
-      } else {
-        setLoading(false);
-        setLogin({
-          name: res.data.name,
-          username: res.data.username,
-          email: res.data.email
+      await axios.post('https://pedidos-server.up.railway.app/api/login', datos)
+        .then(function (response) {
+          if (response.status === 401) {
+            setLoginError(true);
+          } else {
+            setLoading(false);
+            setLogin({
+              name: response.data.name,
+              username: response.data.username,
+              email: response.data.email
+            });
+            window.sessionStorage.setItem('name', JSON.stringify(login.name))
+            window.sessionStorage.setItem('username', JSON.stringify(login.username))
+            window.sessionStorage.setItem('email', JSON.stringify(login.email))
+          }
         })
-        window.sessionStorage.setItem('name', JSON.stringify(login.name))
-        window.sessionStorage.setItem('username', JSON.stringify(login.username))
-        window.sessionStorage.setItem('email', JSON.stringify(login.email))
-      }
+        .catch(function (error) {
+          console.log(error);
+          setLoginError(true);
+        });
     }
   }
 
@@ -47,6 +56,13 @@ export default function Login({ login, setLogin }) {
         <form onSubmit={handleSubmit}>
           <input required name='username' onChange={handleInputChange} type="text" className="form-control mb-3" id="username" placeholder="Tu nombre de usuario" value={datos.username} />
           <input required name='password' onChange={handleInputChange} type="password" className="form-control mb-3" id="password" placeholder="Tu contraseña" value={datos.password} />
+
+          {loginError ?
+            <div className="alert alert-danger" role="alert">
+              Usuario o contraseña erróneos.
+            </div>
+            : null}
+
           <button type='submit' className="btn btn-primary">Iniciar sesión</button>
         </form>
         {loading &&
