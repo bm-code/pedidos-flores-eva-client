@@ -231,13 +231,6 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
         }));
     }
 
-    // const sortByCreatedDateAsc = () => {
-    //     setSortedByDeliveryDate(false)
-    //     setSortedByCreateDate(true)
-    //     setSortedByReceiverName(false)
-    //     setPedidos(cpy)
-    // }
-
     const sortByReceiverName = (arr) => {
         setSortedByDeliveryDate(false)
         // setSortedByCreateDate(false)

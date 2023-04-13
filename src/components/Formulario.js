@@ -54,9 +54,11 @@ export default function Formulario({ setPedidos }) {
                 .catch(err => {
                     console.log(err);
                 });
-            // setTimeout(() => {
-            //     window.location.reload();
-            // }, 200);
+            const adminPhone = '660808563';
+            const messageForAdmin = `*Nuevo pedido registrado*
+
+Hola! Se ha registrado un nuevo pedido (${form.orderType}) para entregar el día ${form.deliveryDate.toLocaleString() + ""}. Nº de teléfono del cliente: ${form.clientPhone}. Entra en pedidos.floreseva.com para ver más detalles.`
+            sendWhatsapp(adminPhone, messageForAdmin);
 
             axios.post('https://pedidos-server.up.railway.app/new-order', JSON.stringify({
                 message: `${form.orderType} creado para ${form.receiverName}`
@@ -67,10 +69,49 @@ export default function Formulario({ setPedidos }) {
                         'Content-Type': 'application/json'
                     }
                 })
+            setTimeout(() => {
+                window.location.reload();
+            }, 200);
         } else {
             alert('La fecha de entrega es obligatoria')
         }
     }
+
+    const sendWhatsapp = (number, message) => {
+        const botId = '109093195489538';
+        const phoneNbr = `34${number}`;
+        const bearerToken = 'EAAIfPX5LhFQBAGivW3Ml6BycHiQlECulQlbAPrlbsi3f4aZCpF2sJx9rP7qLDaPTrSJQ8FLs9rFmZCIbbfxLAhfXjsGgvehTTlPZChgkbPdt020dsTB5E1tMQZCQPHZCcpgzbGiFvonKgSzaIHyN1iArZB69lQENFKcyfwzFb7A1gy5hpMoLZCimkVUD5aglahEiFd2VWJZC0gZDZD';
+
+        const url = 'https://graph.facebook.com/v16.0/' + botId + '/messages';
+        const data = {
+            messaging_product: 'whatsapp',
+            to: phoneNbr,
+            type: 'text',
+            text: {
+                body: message
+            }
+        };
+
+        const postReq = {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + bearerToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+            json: true
+        };
+
+        fetch(url, postReq)
+            .then(data => {
+                return data.json()
+            })
+            .then(res => {
+                console.log(res)
+            })
+            .catch(error => console.log(error));
+    }
+
 
     if (currentOrderType === 'plantas') {
         return (
@@ -156,7 +197,7 @@ export default function Formulario({ setPedidos }) {
                     <textarea onChange={handleInput} className="form-control mb-3" name="comment" value={form.comment} placeholder="Comentarios del pedido" cols="30" rows="3"></textarea>
 
                     <button type="submit" className="btn btn-success">Registrar pedido</button>
-                </form >
+                </form>
             </div >
         )
     }

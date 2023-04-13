@@ -48,12 +48,11 @@ function App() {
     subscriptions();
   }, [])
 
-
   const [user, setUser] = useState({
     name: sessionStorage.getItem('name'),
     username: sessionStorage.getItem('username'),
     email: sessionStorage.getItem('email')
-  });
+  })
 
   return (
     <div className="container py-5">
