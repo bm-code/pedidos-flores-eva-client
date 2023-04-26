@@ -25,7 +25,7 @@ export default function Login({ login, setLogin }) {
     if (datos.username === '' || datos.password === '') {
       console.log('No enviar');
     } else {
-      await axios.post('https://pedidos-server.up.railway.app/api/login', datos)
+      await axios.post('https://flores-eva-server.onrender.com/api/login', datos)
         .then(function (response) {
           if (response.status === 401) {
             setLoginError(true);
@@ -36,9 +36,9 @@ export default function Login({ login, setLogin }) {
               username: response.data.username,
               email: response.data.email
             });
-            window.sessionStorage.setItem('name', JSON.stringify(login.name))
-            window.sessionStorage.setItem('username', JSON.stringify(login.username))
-            window.sessionStorage.setItem('email', JSON.stringify(login.email))
+            sessionStorage.setItem('name', JSON.stringify(login.name))
+            sessionStorage.setItem('username', JSON.stringify(login.username))
+            sessionStorage.setItem('email', JSON.stringify(login.email))
           }
         })
         .catch(function (error) {

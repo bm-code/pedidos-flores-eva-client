@@ -47,20 +47,20 @@ export default function Formulario({ setPedidos }) {
             setPedidos(pedidosActual => [...pedidosActual, form]);
 
             // Realizamos el POST a la base de datos
-            axios.post('https://pedidos-server.up.railway.app/api/orders', form)
+            axios.post('https://flores-eva-server.onrender.com/api/orders', form)
                 .then(response => {
                     console.log(response);
                 })
                 .catch(err => {
                     console.log(err);
                 });
-            const adminPhone = '660808563';
+            const adminPhone = '629562610';
             const messageForAdmin = `*Nuevo pedido registrado*
 
 Hola! Se ha registrado un nuevo pedido (${form.orderType}) para entregar el día ${form.deliveryDate.toLocaleString() + ""}. Nº de teléfono del cliente: ${form.clientPhone}. Entra en pedidos.floreseva.com para ver más detalles.`
             sendWhatsapp(adminPhone, messageForAdmin);
 
-            axios.post('https://pedidos-server.up.railway.app/new-order', JSON.stringify({
+            axios.post('https://flores-eva-server.onrender.com/new-order', JSON.stringify({
                 message: `${form.orderType} creado para ${form.receiverName}`
             })
                 ,
@@ -80,7 +80,7 @@ Hola! Se ha registrado un nuevo pedido (${form.orderType}) para entregar el día
     const sendWhatsapp = (number, message) => {
         const botId = '109093195489538';
         const phoneNbr = `34${number}`;
-        const bearerToken = 'EAAIfPX5LhFQBAGivW3Ml6BycHiQlECulQlbAPrlbsi3f4aZCpF2sJx9rP7qLDaPTrSJQ8FLs9rFmZCIbbfxLAhfXjsGgvehTTlPZChgkbPdt020dsTB5E1tMQZCQPHZCcpgzbGiFvonKgSzaIHyN1iArZB69lQENFKcyfwzFb7A1gy5hpMoLZCimkVUD5aglahEiFd2VWJZC0gZDZD';
+        const bearerToken = 'EAAIfPX5LhFQBAFTmfOEc3WJZAm7JXfiN6QoIZCZAA7tsyGWpJGSm6cttg2rQnWtPZBA7qh5bNw7O9iYimleapLnzjJScLyIGBj0SVOufZCkSzezjutRZBOfhZCnTxSKHZBji28BOhD7S6Q5BUEw7du4AZBL5MUSKL4AdaBc846srNaAtx0BZAfY0ko4LLLL6B9djZANZCVFxdD69aAZDZD';
 
         const url = 'https://graph.facebook.com/v16.0/' + botId + '/messages';
         const data = {

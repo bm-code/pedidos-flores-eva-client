@@ -23,7 +23,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
 
         setPedidos(newPedidos);
         // Realizamos el POST a la base de datos
-        axios.post('https://pedidos-server.up.railway.app/api/actualizar', newPedidos[index])
+        axios.post('https://flores-eva-server.onrender.com/api/actualizar', newPedidos[index])
             .then(response => {
                 console.log(response);
             })
@@ -147,7 +147,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
         newPedidos[index].paid = form.paid;
         if (newPedidos[index].deliveryDate) {
             setPedidos(newPedidos)
-            axios.post('https://pedidos-server.up.railway.app/api/editar', newPedidos[index])
+            axios.post('https://flores-eva-server.onrender.com/api/editar', newPedidos[index])
                 .then(response => {
                     console.log(response);
                 })
@@ -176,7 +176,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
             newPedidos[index].delete = true;
             setPedidos(newPedidos);
             // Realizamos el POST a la base de datos
-            axios.post('https://pedidos-server.up.railway.app/api/borrar', newPedidos[index])
+            axios.post('https://flores-eva-server.onrender.com/api/borrar', newPedidos[index])
                 .then(response => {
                     console.log(response);
                 })
@@ -202,7 +202,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
 
     useEffect(() => {
         let isMounted = true;
-        fetch('https://pedidos-server.up.railway.app/api/orders')
+        fetch('https://flores-eva-server.onrender.com/api/orders')
             .then(res => res.json())
             .then(data => {
                 if (isMounted) {
