@@ -48,14 +48,21 @@ function App() {
     subscriptions();
   }, [])
 
-  const [user, setUser] = useState({
-    name: sessionStorage.getItem('name'),
-    username: sessionStorage.getItem('username'),
-    email: sessionStorage.getItem('email')
-  })
+  const [user, setUser] = useState({})
+
+  useEffect(() => {
+    setUser({
+      name: localStorage.getItem('name'),
+      username: localStorage.getItem('username'),
+      email: localStorage.getItem('email')
+    })
+  }, [])
 
   return (
     <div className="container py-5">
+      {user.name && <div className="row col-12 text-center">
+        <h2 className="mt-5">Hola, {user.name}</h2>
+      </div>}
       {user.name !== null ? <Header /> : <Login login={user} setLogin={setUser} />}
     </div>
   )
