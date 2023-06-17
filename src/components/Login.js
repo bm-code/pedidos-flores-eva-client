@@ -22,7 +22,7 @@ export default function Login({ login, setLogin }) {
     event.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5500/api/login', {
+      const response = await axios.post('https://flores-eva-server.onrender.com/api/login', {
         username,
         password,
       });

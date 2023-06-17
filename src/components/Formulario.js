@@ -53,7 +53,7 @@ export default function Formulario({ setPedidos }) {
             setPedidos(pedidosActual => [...pedidosActual, form]);
             form.shop = shop;
             // Realizamos el POST a la base de datos
-            axios.post('http://localhost:5500/api/orders', form)
+            axios.post('https://flores-eva-server.onrender.com/api/orders', form)
                 .then(response => {
                     console.log(response);
                 })
@@ -67,7 +67,7 @@ export default function Formulario({ setPedidos }) {
 Hola! Se ha registrado un nuevo pedido (${form.orderType}) para entregar el día ${form.deliveryDate.toLocaleString() + ""}. Nº de teléfono del cliente: ${form.clientPhone}. Entra en pedidos.floreseva.com para ver más detalles.`
             sendWhatsapp(adminPhone, messageForAdmin);
 
-            axios.post('http://localhost:5500/new-order', JSON.stringify({
+            axios.post('https://flores-eva-server.onrender.com/new-order', JSON.stringify({
                 message: `${form.orderType} creado para ${form.receiverName}`
             })
                 ,
