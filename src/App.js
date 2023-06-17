@@ -65,7 +65,6 @@ function App() {
     })
   }, [])
 
-  const shopSelected = localStorage.getItem('shop');
   const [active, setActive] = useState(false)
 
   const changeShop = event => {
