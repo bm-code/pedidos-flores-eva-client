@@ -1,0 +1,8 @@
+#barrio,
+#centro {
+    transition: all .3s;
+}
+
+.selected {
+    box-shadow: 0 6px 13px rgba(0, 0, 0, 0.3);
+}

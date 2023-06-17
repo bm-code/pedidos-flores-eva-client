@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from 'axios';
 import { useLocation } from "react-router-dom";
 
 export default function Formulario({ setPedidos }) {
     const location = useLocation().pathname;
+
     let currentOrderType;
-    if (location === '/') {
+    if (location === '/pedidos') {
         currentOrderType = 'pedido'
     } else if (location === '/coronas') {
         currentOrderType = 'corona'
@@ -13,6 +14,10 @@ export default function Formulario({ setPedidos }) {
         currentOrderType = 'plantas'
     }
 
+    const [shop, setShop] = useState('')
+    useEffect(() => {
+        setShop(localStorage.getItem('shop'))
+    }, [])
     const initialState = {
         orderType: currentOrderType,
         createDate: '',
@@ -27,9 +32,11 @@ export default function Formulario({ setPedidos }) {
         clientPhone: '',
         comment: '',
         completed: false,
-        paid: false
+        paid: false,
+        shop: shop,
     }
     const [form, setForm] = useState(initialState);
+
 
     function handleInput(event) {
         event.target.value ? setForm({ ...form, [event.target.name]: event.target.value }) : setForm({ ...form, [event.target.name]: event.target.id })
@@ -37,30 +44,30 @@ export default function Formulario({ setPedidos }) {
 
     function registrarPedido(event) {
         event.preventDefault();
-
+        shop ? setShop(shop) : setShop(localStorage.getItem('shop'))
         if (form.deliveryDate !== '') {
             form.orderType = currentOrderType;
             form.createDate = new Date().toLocaleString() + ""
             form.deliveryDate = form.deliveryDate.toLocaleString() + ""
             setForm(initialState);
-            console.log(form);
             setPedidos(pedidosActual => [...pedidosActual, form]);
-
+            form.shop = shop;
             // Realizamos el POST a la base de datos
-            axios.post('https://flores-eva-server.onrender.com/api/orders', form)
+            axios.post('http://localhost:5500/api/orders', form)
                 .then(response => {
                     console.log(response);
                 })
                 .catch(err => {
                     console.log(err);
                 });
+
             const adminPhone = '629562610';
             const messageForAdmin = `*Nuevo pedido registrado*
 
 Hola! Se ha registrado un nuevo pedido (${form.orderType}) para entregar el día ${form.deliveryDate.toLocaleString() + ""}. Nº de teléfono del cliente: ${form.clientPhone}. Entra en pedidos.floreseva.com para ver más detalles.`
             sendWhatsapp(adminPhone, messageForAdmin);
 
-            axios.post('https://flores-eva-server.onrender.com/new-order', JSON.stringify({
+            axios.post('http://localhost:5500/new-order', JSON.stringify({
                 message: `${form.orderType} creado para ${form.receiverName}`
             })
                 ,
@@ -135,6 +142,7 @@ Hola! Se ha registrado un nuevo pedido (${form.orderType}) para entregar el día
 
                     <input type="tel" pattern="[0-9]{9}" className="form-control mb-3" name='clientPhone' value={form.clientPhone} placeholder="Teléfono del cliente" onChange={handleInput} />
 
+                    <p>¿Está pagado el pedido?</p>
                     <div className="form-check">
                         <input onChange={handleInput} className="form-check-input" type="radio" name="paid" id="pedido-no-pagado" value={false} />
                         <label className="form-check-label" htmlFor="pedido-no-pagado">

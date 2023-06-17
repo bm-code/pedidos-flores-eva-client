@@ -1,8 +1,9 @@
 import Header from "./components/Header";
 import Login from "./components/Login";
-import { useState, useEffect } from "react";
 import axios from "axios";
 import { initializeApp } from "firebase/app";
+import { useEffect, useState } from "react";
+import ShopSelector from "./components/ShopSelector";
 
 function App() {
   // Import the functions you need from the SDKs you need
@@ -19,6 +20,12 @@ function App() {
     appId: "1:753351769892:web:0c920d0f06c3f13d68fdb1"
   };
 
+  const [shop, setShop] = useState('')
+
+  useEffect(() => {
+    setShop(localStorage.getItem('shop'))
+  }, [])
+
   // Initialize Firebase
   // eslint-disable-next-line
   const app = initializeApp(firebaseConfig);
@@ -34,7 +41,7 @@ function App() {
       applicationLocalKey: process.env.PUBLIC_KEY
     })
 
-    await axios.post('https://flores-eva-server.onrender.com/subscriptions',
+    await axios.post('http://localhost:5500/subscriptions',
       subscription,
       {
         headers: {
@@ -58,12 +65,31 @@ function App() {
     })
   }, [])
 
+  const shopSelected = localStorage.getItem('shop');
+  const [active, setActive] = useState(false)
+
+  const changeShop = event => {
+    localStorage.removeItem('shop');
+    localStorage.setItem('shop', event.target.value);
+    setTimeout(() => {
+      window.location.reload();
+    }, 500)
+  }
+
   return (
     <div className="container py-5">
       {user.name && <div className="row col-12 text-center">
-        <h2 className="mt-5">Hola, {user.name}</h2>
+        <h2 className="mt-5">Hola, {user.name}. Estás en la tienda del {shop}. <span onClick={() => setActive(!active)} className="btn btn-link">Cambiar</span></h2>
+
+        {active &&
+          <select onChange={changeShop} className="form-select" aria-label="Seleccionar opción">
+            <option defaultValue=''>Seleccionar tienda</option>
+            <option value="barrio">Barrio</option>
+            <option value="centro">Centro</option>
+          </select>
+        }
       </div>}
-      {user.name !== null ? <Header /> : <Login login={user} setLogin={setUser} />}
+      {user.name !== null ? shop ? <Header /> : <ShopSelector /> : <Login login={user} setLogin={setUser} />}
     </div>
   )
 }

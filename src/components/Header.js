@@ -10,19 +10,24 @@ import {
 } from "react-router-dom";
 import AgendaCoronas from './AgendaCoronas';
 import Plantas from './Plantas';
+import './Header.css'
+import ShopSelector from './ShopSelector';
 
 export default function Header() {
     const [pedidosActual, setPedidos] = useState([]);
     const location = window.location.pathname;
+
+
     return (
         <>
             <Router>
                 <header className="row">
-                    <nav className="navbar fixed-top navbar-light bg-light">
+                    <nav className="navbar fixed-top navbar-light bg-light" id='navbarDropdownMenuLink' role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
                         <div className="container">
                             <ul className="nav nav-pills col-12 col-sm-8 justify-content-center justify-content-sm-start">
                                 <li className="nav-item">
-                                    <NavLink to='/' className="pedidos-link nav-link" >Pedidos</NavLink>
+                                    <NavLink to='/pedidos' className="pedidos-link nav-link" >Pedidos</NavLink>
                                 </li>
                                 <li className="nav-item">
                                     <NavLink to='/coronas' className="coronas-link nav-link">Coronas</NavLink>
@@ -30,9 +35,10 @@ export default function Header() {
                                 <li className="nav-item">
                                     <NavLink to='/plantas' className="coronas-link nav-link">Plantas</NavLink>
                                 </li>
+
                             </ul>
                             <button style={{ height: "fit-content" }} type="button" className="btn btn-primary col-4 d-none d-md-block" data-toggle="modal" data-target="#registerOrderModal">
-                                {location === '/' &&
+                                {location === '/pedidos' &&
                                     ' Registrar nuevo pedido'}
                                 {location === '/coronas' &&
                                     ' Registrar nueva corona'}
@@ -65,7 +71,9 @@ export default function Header() {
                 </header>
 
                 <Routes>
-                    <Route exact activeClassName="active-route" path="/" element={<Agenda pedidos={pedidosActual} setPedidos={setPedidos} title='Pedidos' orderType='pedido' />} />
+                    <Route exact activeClassName="active" path="/home" element={<ShopSelector />} />
+
+                    <Route exact activeClassName="active-route" path="/pedidos" element={<Agenda pedidos={pedidosActual} setPedidos={setPedidos} title='Pedidos' orderType='pedido' />} />
                     <Route exact activeClassName="active-route" path="/coronas" element={<AgendaCoronas pedidos={pedidosActual} setPedidos={setPedidos} title='Coronas' orderType='corona' />} />
                     <Route exact activeClassName="active-route" path="/plantas" element={<Plantas pedidos={pedidosActual} setPedidos={setPedidos} title='Plantas' orderType='plantas' />} />
                 </Routes>

@@ -3,17 +3,19 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 
-export default function Agenda({ pedidos, setPedidos, title, orderType }) {
+export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) {
 
     const location = useLocation().pathname;
     let currentOrderType;
-    if (location === '/') {
+    if (location === '/pedidos') {
         currentOrderType = 'pedido'
     } else if (location === '/coronas') {
         currentOrderType = 'corona'
     } else {
         currentOrderType = 'plantas'
     }
+
+    const user = localStorage.getItem('name');
 
     // Toggle complete
     const toggleCompleted = function (id) {
@@ -23,7 +25,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
 
         setPedidos(newPedidos);
         // Realizamos el POST a la base de datos
-        axios.post('https://flores-eva-server.onrender.com/api/actualizar', newPedidos[index])
+        axios.post('http://localhost:5500/api/actualizar', newPedidos[index])
             .then(response => {
                 console.log(response);
             })
@@ -91,6 +93,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
         comment: '',
         completed: false,
         delete: false,
+        shop: '',
         paid: false
     }
     const [form, setForm] = useState(initialState);
@@ -112,6 +115,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
             comment: pedidos[selectedOrder]?.comment,
             completed: pedidos[selectedOrder]?.completed,
             delete: pedidos[selectedOrder]?.delete,
+            shop: pedidos[selectedOrder]?.shop,
             paid: pedidos[selectedOrder]?.paid
         });
         success.classList.add('d-none')
@@ -144,10 +148,11 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
         newPedidos[index].comment = form.comment;
         newPedidos[index].completed = form.completed;
         newPedidos[index].delete = form.delete;
+        newPedidos[index].shop = form.shop;
         newPedidos[index].paid = form.paid;
         if (newPedidos[index].deliveryDate) {
             setPedidos(newPedidos)
-            axios.post('https://flores-eva-server.onrender.com/api/editar', newPedidos[index])
+            axios.post('http://localhost:5500/api/editar', newPedidos[index])
                 .then(response => {
                     console.log(response);
                 })
@@ -176,7 +181,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
             newPedidos[index].delete = true;
             setPedidos(newPedidos);
             // Realizamos el POST a la base de datos
-            axios.post('https://flores-eva-server.onrender.com/api/borrar', newPedidos[index])
+            axios.post('http://localhost:5500/api/borrar', newPedidos[index])
                 .then(response => {
                     console.log(response);
                 })
@@ -202,7 +207,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
 
     useEffect(() => {
         let isMounted = true;
-        fetch('https://flores-eva-server.onrender.com/api/orders')
+        fetch('http://localhost:5500/api/orders')
             .then(res => res.json())
             .then(data => {
                 if (isMounted) {
@@ -349,12 +354,13 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
 
                     </div>
                     {
-                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === false).filter(pedido => pedido?.orderType === orderType).map(({ orderType, deliveryDate, createDate, receiverName, customerType, phone, address, comment, product, productDetails, clientName, clientPhone, completed, paid, _id }, index) => {
+                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === false).filter(pedido => pedido?.orderType === orderType).map(({ orderType, deliveryDate, createDate, receiverName, customerType, phone, address, comment, product, productDetails, clientName, clientPhone, completed, paid, shop, _id }, index) => {
                             return <ul id={_id + 'print'} key={_id} className="list-group col-xl-4 col-lg-4 col-md-6 mb-3 p-0 p-md-1 p-lg-2">
                                 <li className="list-group-item list-group-item-info d-flex justify-content-between align-items-center">
                                     <div>
                                         <p className="m-0"><b style={{ cursor: "pointer" }} onClick={() => setShowFullOrderNumber(!showFullOrderNumber)}>Pedido Nº</b> {_id ? formatOrderNumber(_id) : ''}</p>
                                         <p className="m-0"><b>Creado:</b> {createDate.split(',')[0]}</p>
+                                        <p className="m-0"><b>Registrado por:</b> {user}</p>
                                     </div>
 
                                     {/* Menu button */}
@@ -391,7 +397,9 @@ export default function Agenda({ pedidos, setPedidos, title, orderType }) {
                                 <li className="list-group-item"><b>Nombre del cliente:</b> {clientName}</li>
                                 <li className="list-group-item"><b>Teléfono del cliente:</b> {clientPhone}</li>
                                 <li className="list-group-item"><b>Comentarios o notas:</b> {comment}</li>
-                                <li className="list-group-item"><b>Pedido pagado: </b>{paid ? 'Sí' : 'No'}</li><li className="list-group-item"><b>Estado del pedido: </b>{completed ? 'COMPLETADO' : 'NO COMPLETADO'}</li>
+                                <li className="list-group-item"><b>Tienda: </b>{shop}</li>
+                                <li className="list-group-item"><b>Pedido pagado: </b>{paid ? 'Sí' : 'No'}</li>
+                                <li className="list-group-item"><b>Estado del pedido: </b>{completed ? 'COMPLETADO' : 'NO COMPLETADO'}</li>
                                 <button className="btn btn-success" id={_id} onClick={event => toggleCompleted(event.target.id)}>Marcar como completado</button>
                             </ul>
                         })

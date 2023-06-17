@@ -5,49 +5,6 @@ import logo from '../assets/logo.svg'
 
 export default function Login({ login, setLogin }) {
 
-  // const initialState = {
-  //   username: '',
-  //   password: ''
-  // }
-
-  // const [datos, setDatos] = useState(initialState)
-  // const [loading, setLoading] = useState(false)
-  // const [loginError, setLoginError] = useState(false);
-
-  // const handleInputChange = (e) => {
-  //   let { name, value } = e.target;
-  //   let newDatos = { ...datos, [name]: value }
-  //   setDatos(newDatos);
-  // }
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   if (datos.username === '' || datos.password === '') {
-  //     console.log('No enviar');
-  //   } else {
-  //     await axios.post('https://flores-eva-server.onrender.com/api/login', datos)
-  //       .then(function (response) {
-  //         if (response.status === 401) {
-  //           setLoginError(true);
-  //         } else {
-  //           setLoading(false);
-  //           setLogin({
-  //             name: response.data.name,
-  //             username: response.data.username,
-  //             email: response.data.email
-  //           });
-  //           sessionStorage.setItem('name', JSON.stringify(login.name))
-  //           sessionStorage.setItem('username', JSON.stringify(login.username))
-  //           sessionStorage.setItem('email', JSON.stringify(login.email))
-  //         }
-  //       })
-  //       .catch(function (error) {
-  //         console.log(error);
-  //         setLoginError(true);
-  //       });
-  //   }
-  // }
-
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false)
@@ -65,11 +22,10 @@ export default function Login({ login, setLogin }) {
     event.preventDefault();
 
     try {
-      const response = await axios.post('https://flores-eva-server.onrender.com/api/login', {
+      const response = await axios.post('http://localhost:5500/api/login', {
         username,
         password,
       });
-      console.log(response);
       setLoginError(false);
       setLoading(false)
       localStorage.setItem('username', response.data.username);
