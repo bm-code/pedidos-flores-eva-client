@@ -3,13 +3,15 @@ import { useState } from 'react'
 import barrio from '../assets/barrio.jpeg'
 import centro from '../assets/centro.jpeg'
 import './ShopSelector.css'
-
+import { useNavigate } from 'react-router-dom';
 export default function ShopSelector() {
+
 
     const [selectedBarrio, setSelectedBarrio] = useState(false);
     const [selectedCentro, setSelectedCentro] = useState(false);
     const [active, setActive] = useState(false);
     const [shop, setShop] = useState('')
+    const navigate = useNavigate()
 
     const selectShop = event => {
         localStorage.setItem('shop', event.currentTarget.id)
@@ -20,11 +22,17 @@ export default function ShopSelector() {
     }
 
     const goToOrderList = () => {
-        if (shop !== '') window.location.href = '/pedidos';
+        if (shop !== '') {
+            navigate('/pedidos');
+            setTimeout(() => {
+                window.location.reload()
+            }, 500);
+        } 
     }
 
     return (
         <>
+
             <h2 className='text-center'>Selecciona la tienda a la que asignar los pedidos</h2>
 
             <div className="container d-flex justify-content-center mt-5 mb-3">

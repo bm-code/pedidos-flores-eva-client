@@ -4,6 +4,7 @@ import axios from "axios";
 import { initializeApp } from "firebase/app";
 import { useEffect, useState } from "react";
 import ShopSelector from "./components/ShopSelector";
+import { BrowserRouter } from "react-router-dom";
 
 function App() {
   // Import the functions you need from the SDKs you need
@@ -76,6 +77,7 @@ function App() {
   }
 
   return (
+
     <div className="container py-5">
       {user.name && <div className="row col-12 text-center">
         <h2 className="mt-5">Hola, {user.name}. Estás en la tienda del {shop}. <span onClick={() => setActive(!active)} className="btn btn-link">Cambiar</span></h2>
@@ -88,8 +90,9 @@ function App() {
           </select>
         }
       </div>}
-      {user.name !== null ? shop ? <Header /> : <ShopSelector /> : <Login login={user} setLogin={setUser} />}
+      {user.name !== null ? shop ? <Header /> : <BrowserRouter><ShopSelector /> </BrowserRouter> : <Login login={user} setLogin={setUser} />}
     </div>
+
   )
 }
 
