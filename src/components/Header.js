@@ -6,7 +6,7 @@ import {
     BrowserRouter as Router,
     NavLink,
     Route,
-    Routes
+    Routes,
 } from "react-router-dom";
 import AgendaCoronas from './AgendaCoronas';
 import Plantas from './Plantas';
@@ -15,12 +15,12 @@ import ShopSelector from './ShopSelector';
 
 export default function Header() {
     const [pedidosActual, setPedidos] = useState([]);
-    const location = window.location.pathname;
-
+    let location = window.location.pathname;
 
     return (
         <>
             <Router>
+
                 <header className="row">
                     <nav className="navbar fixed-top navbar-light bg-light" id='navbarDropdownMenuLink' role="button" data-bs-toggle="dropdown" aria-expanded="false">
 
@@ -39,6 +39,8 @@ export default function Header() {
                             </ul>
                             <button style={{ height: "fit-content" }} type="button" className="btn btn-primary col-4 d-none d-md-block" data-toggle="modal" data-target="#registerOrderModal">
                                 {location === '/pedidos' &&
+                                    ' Registrar nuevo pedido'}
+                                {location === '/' &&
                                     ' Registrar nuevo pedido'}
                                 {location === '/coronas' &&
                                     ' Registrar nueva corona'}
@@ -71,11 +73,11 @@ export default function Header() {
                 </header>
 
                 <Routes>
-                    <Route exact activeClassName="active" path="/home" element={<ShopSelector />} />
-
+                    <Route activeClassName="active" path="/home" element={<ShopSelector />} />
+                    <Route exact activeClassName="active-route" path="/" element={<Agenda pedidos={pedidosActual} setPedidos={setPedidos} title='Pedidos' orderType='pedido' />} />
                     <Route exact activeClassName="active-route" path="/pedidos" element={<Agenda pedidos={pedidosActual} setPedidos={setPedidos} title='Pedidos' orderType='pedido' />} />
-                    <Route exact activeClassName="active-route" path="/coronas" element={<AgendaCoronas pedidos={pedidosActual} setPedidos={setPedidos} title='Coronas' orderType='corona' />} />
-                    <Route exact activeClassName="active-route" path="/plantas" element={<Plantas pedidos={pedidosActual} setPedidos={setPedidos} title='Plantas' orderType='plantas' />} />
+                    <Route activeClassName="active-route" path="/coronas" element={<AgendaCoronas pedidos={pedidosActual} setPedidos={setPedidos} title='Coronas' orderType='corona' />} />
+                    <Route activeClassName="active-route" path="/plantas" element={<Plantas pedidos={pedidosActual} setPedidos={setPedidos} title='Plantas' orderType='plantas' />} />
                 </Routes>
             </Router>
         </>

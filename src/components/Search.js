@@ -9,7 +9,7 @@ export default function Search({ term, setTerm }) {
                 type="text"
                 name="searchProducts"
                 id="searchProducts"
-                placeholder={`Busca por el nombre del cliente`} />
+                placeholder={`Busca por el nombre del cliente o del destinatario`} />
         </div>
     )
 }

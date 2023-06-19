@@ -61,8 +61,10 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
     // Buscador
     const [term, setTerm] = useState('');
     const searchingTerm = (term) => {
+        if (term !== '' && !showCompleted) setShowCompleted(true)
+        else if (term === '' && showCompleted) setShowCompleted(false)
         return function (name) {
-            return name.clientName.toLowerCase().includes(term) || !term;
+            return name.clientName.toLowerCase().includes(term.toLowerCase()) || name.receiverName.toLowerCase().includes(term.toLowerCase()) || !term;
         }
     }
 

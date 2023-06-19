@@ -80,7 +80,11 @@ function App() {
 
     <div className="container py-5">
       {user.name && <div className="row col-12 text-center">
-        <h2 className="mt-5">Hola, {user.name}. Estás en la tienda del {shop}. <span onClick={() => setActive(!active)} className="btn btn-link">Cambiar</span></h2>
+        <h2 className="mt-5">Hola, {user.name}</h2>
+        {
+          shop &&
+          <p>Estás en la tienda del <b>{shop}</b>. <span onClick={() => setActive(!active)} className="btn btn-link">Cambiar</span></p>
+        }
 
         {active &&
           <select onChange={changeShop} className="form-select" aria-label="Seleccionar opción">
