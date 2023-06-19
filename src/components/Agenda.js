@@ -15,8 +15,6 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
         currentOrderType = 'plantas'
     }
 
-    const user = localStorage.getItem('name');
-
     // Toggle complete
     const toggleCompleted = function (id) {
         const newPedidos = [...pedidos];
@@ -61,9 +59,9 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
     // Buscador
     const [term, setTerm] = useState('');
     const searchingTerm = (term) => {
-        if (term !== '' && !showCompleted) setShowCompleted(true)
-        else if (term === '' && showCompleted) setShowCompleted(false)
         return function (name) {
+            // if (term !== '' && !showCompleted) setShowCompleted(true)
+            // else if (term === '' && showCompleted) setShowCompleted(false)
             return name.clientName.toLowerCase().includes(term.toLowerCase()) || name.receiverName.toLowerCase().includes(term.toLowerCase()) || !term;
         }
     }
@@ -96,6 +94,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
         completed: false,
         delete: false,
         shop: '',
+        employee: '',
         paid: false
     }
     const [form, setForm] = useState(initialState);
@@ -118,6 +117,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
             completed: pedidos[selectedOrder]?.completed,
             delete: pedidos[selectedOrder]?.delete,
             shop: pedidos[selectedOrder]?.shop,
+            employee: pedidos[selectedOrder]?.employee,
             paid: pedidos[selectedOrder]?.paid
         });
         success.classList.add('d-none')
@@ -151,6 +151,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
         newPedidos[index].completed = form.completed;
         newPedidos[index].delete = form.delete;
         newPedidos[index].shop = form.shop;
+        newPedidos[index].employee = form.employee;
         newPedidos[index].paid = form.paid;
         if (newPedidos[index].deliveryDate) {
             setPedidos(newPedidos)
@@ -331,6 +332,8 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
                                         </label>
                                     </div >
 
+                                    <input type="text" className="form-control mb-3" name='employee' value={form.employee} placeholder="Empleado" onChange={handleInput} />
+
                                     <textarea onChange={handleInput} className="form-control mb-3" name="comment" value={form.comment} placeholder="Comentarios del pedido" cols="30" rows="10"></textarea>
 
                                     <div className="alert d-none" role="alert">
@@ -356,13 +359,13 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
 
                     </div>
                     {
-                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === false).filter(pedido => pedido?.orderType === orderType).map(({ orderType, deliveryDate, createDate, receiverName, customerType, phone, address, comment, product, productDetails, clientName, clientPhone, completed, paid, shop, _id }, index) => {
+                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === false).filter(pedido => pedido?.orderType === orderType).map(({ orderType, deliveryDate, createDate, receiverName, customerType, phone, address, comment, product, productDetails, clientName, clientPhone, completed, paid, shop, employee, _id }, index) => {
                             return <ul id={_id + 'print'} key={_id} className="list-group col-xl-4 col-lg-4 col-md-6 mb-3 p-0 p-md-1 p-lg-2">
                                 <li className="list-group-item list-group-item-info d-flex justify-content-between align-items-center">
                                     <div>
                                         <p className="m-0"><b style={{ cursor: "pointer" }} onClick={() => setShowFullOrderNumber(!showFullOrderNumber)}>Pedido Nº</b> {_id ? formatOrderNumber(_id) : ''}</p>
                                         <p className="m-0"><b>Creado:</b> {createDate.split(',')[0]}</p>
-                                        <p className="m-0"><b>Registrado por:</b> {user}</p>
+                                        <p className="m-0"><b>Registrado por:</b> {employee}</p>
                                     </div>
 
                                     {/* Menu button */}
@@ -412,15 +415,19 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
                     <button className="btn btn-link mb-3" onClick={() => setShowCompleted(!showCompleted)}>{showCompleted ? 'Ocultar pedidos completados' : 'Mostrar pedidos completados'}</button>
                     <div className="row col-12 m-auto mt-5" style={{ 'height': 'fit-content' }}>
                         {
-                            pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === true).filter(pedido => pedido?.orderType === orderType).map(({ orderType, deliveryDate, customerType, productDetails, paid, receiverName, phone, address, comment, product, clientName, clientPhone, completed, _id }, index) => {
+                            pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === true).filter(pedido => pedido?.orderType === orderType).map(({ orderType, deliveryDate, customerType, productDetails, paid, receiverName, phone, address, comment, product, clientName, clientPhone, completed, employee, shop, createDate, _id }, index) => {
                                 return showCompleted ? <ul id={_id + 'print'} key={_id} className="list-group col-xl-4 col-lg-4 col-md-6 mb-3 p-0 p-md-1 p-lg-2">
-                                    <li className="list-group-item active">
-                                        <b style={{ cursor: "pointer" }} onClick={() => setShowFullOrderNumber(!showFullOrderNumber)}>Pedido Nº</b> {_id ? formatOrderNumber(_id) : ''}
+                                    <li className="list-group-item list-group-item-primary d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p className="m-0"><b style={{ cursor: "pointer" }} onClick={() => setShowFullOrderNumber(!showFullOrderNumber)}>Pedido Nº</b> {_id ? formatOrderNumber(_id) : ''}</p>
+                                            <p className="m-0"><b>Creado:</b> {createDate.split(',')[0]}</p>
+                                            <p className="m-0"><b>Registrado por:</b> {employee}</p>
+                                        </div>
 
 
                                         {/* Menu button */}
                                         <div style={{ display: 'inline', marginLeft: '10px' }} className="dropdown">
-                                            <button onClick={() => setSelected(_id)} className={`text-white dropdown-toggle btn btn-link`} type="button" data-toggle="dropdown" aria-expanded="false"></button>
+                                            <button onClick={() => setSelected(_id)} className={`text-dark dropdown-toggle btn btn-link`} type="button" data-toggle="dropdown" aria-expanded="false"></button>
                                             <div className="dropdown-menu" >
                                                 <button onClick={setOrderDetails} className="dropdown-item" data-toggle="modal" data-target="#editOrderModal">Editar pedido</button>
                                                 <button onClick={() => printOrder(_id)} className="dropdown-item" >Imprimir pedido</button>
@@ -453,6 +460,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
                                     <li className="list-group-item"><b>Teléfono del cliente:</b> {clientPhone}</li>
                                     <li className="list-group-item"><b>Comentarios o notas:</b> {comment}</li>
                                     <li className="list-group-item"><b>Pedido pagado: </b>{paid ? 'Sí' : 'No'}</li><li className="list-group-item"><b>Estado del pedido: </b>{completed ? 'COMPLETADO' : 'NO COMPLETADO'}</li>
+                                    <li className="list-group-item"><b>Tienda:</b> {shop}</li>
                                     <button className="btn btn-danger" id={_id} onClick={event => toggleCompleted(event.target.id)}>Marcar como NO completado</button>
                                 </ul> : null
 

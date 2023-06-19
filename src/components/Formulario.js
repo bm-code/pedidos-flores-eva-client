@@ -33,6 +33,7 @@ export default function Formulario({ setPedidos }) {
         comment: '',
         completed: false,
         paid: false,
+        employee: '',
         shop: shop,
     }
     const [form, setForm] = useState(initialState);
@@ -156,6 +157,8 @@ Hola! Se ha registrado un nuevo pedido (${form.orderType}) para entregar el día
                         </label>
                     </div>
 
+                    <input type="text" className="form-control mb-3" name='employee' value={form.employee} placeholder="Empleado/a" onChange={handleInput} />
+
                     <textarea onChange={handleInput} className="form-control mb-3" name="comment" value={form.comment} placeholder="Comentarios del pedido" cols="30" rows="3"></textarea>
 
                     <button type="submit" className="btn btn-success">Registrar pedido</button>
@@ -201,6 +204,8 @@ Hola! Se ha registrado un nuevo pedido (${form.orderType}) para entregar el día
                             Pagado
                         </label>
                     </div >
+
+                    <input type="text" className="form-control mb-3" name='employee' value={form.employee} placeholder="Empleado/a" onChange={handleInput} />
 
                     <textarea onChange={handleInput} className="form-control mb-3" name="comment" value={form.comment} placeholder="Comentarios del pedido" cols="30" rows="3"></textarea>
 
@@ -255,6 +260,8 @@ Hola! Se ha registrado un nuevo pedido (${form.orderType}) para entregar el día
                             Pagado
                         </label>
                     </div >
+
+                    <input type="text" className="form-control mb-3" name='employee' value={form.employee} placeholder="Empleado/a" onChange={handleInput} />
 
                     <textarea onChange={handleInput} className="form-control mb-3" name="comment" value={form.comment} placeholder="Comentarios del pedido" cols="30" rows="3"></textarea>
 
