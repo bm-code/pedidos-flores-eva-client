@@ -15,6 +15,8 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
         currentOrderType = 'plantas'
     }
 
+    const shopSelected = localStorage.getItem('shop');
+
     // Toggle complete
     const toggleCompleted = function (id) {
         const newPedidos = [...pedidos];
@@ -348,7 +350,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
                 {/* modal editar pedido */}
 
                 <div className="row col-12 m-auto mt-5" style={{ 'height': 'fit-content' }}>
-                    <h2 className="mb-3">{title} pendientes</h2>
+                    <h2 className="mb-3">{title} pendientes - Tienda {shopSelected}</h2>
                     <Search term={term} setTerm={setTerm} />
                     <div className="btn-group mt-1" role="group" aria-label="Sort buttons">
                         <button type="button" className={sortedByDeliveryDate ? "btn btn-info active text-white border" : "btn btn-light border"} onClick={() => sortByDeliveryDateAsc(pedidos)}>Ordernar por Fecha de entrega</button>
@@ -359,7 +361,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
 
                     </div>
                     {
-                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === false).filter(pedido => pedido?.orderType === orderType).map(({ orderType, deliveryDate, createDate, receiverName, customerType, phone, address, comment, product, productDetails, clientName, clientPhone, completed, paid, shop, employee, _id }, index) => {
+                        pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === false).filter(pedido => pedido?.orderType === orderType).filter(pedido => pedido.shop === shopSelected).map(({ orderType, deliveryDate, createDate, receiverName, customerType, phone, address, comment, product, productDetails, clientName, clientPhone, completed, paid, shop, employee, _id }, index) => {
                             return <ul id={_id + 'print'} key={_id} className="list-group col-xl-4 col-lg-4 col-md-6 mb-3 p-0 p-md-1 p-lg-2">
                                 <li className="list-group-item list-group-item-info d-flex justify-content-between align-items-center">
                                     <div>
@@ -415,7 +417,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
                     <button className="btn btn-link mb-3" onClick={() => setShowCompleted(!showCompleted)}>{showCompleted ? 'Ocultar pedidos completados' : 'Mostrar pedidos completados'}</button>
                     <div className="row col-12 m-auto mt-5" style={{ 'height': 'fit-content' }}>
                         {
-                            pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === true).filter(pedido => pedido?.orderType === orderType).map(({ orderType, deliveryDate, customerType, productDetails, paid, receiverName, phone, address, comment, product, clientName, clientPhone, completed, employee, shop, createDate, _id }, index) => {
+                            pedidos.filter(pedido => !pedido.delete).filter(searchingTerm(term)).filter(pedido => pedido.completed === true).filter(pedido => pedido?.orderType === orderType).filter(pedido => pedido.shop === shopSelected).map(({ orderType, deliveryDate, customerType, productDetails, paid, receiverName, phone, address, comment, product, clientName, clientPhone, completed, employee, shop, createDate, _id }, index) => {
                                 return showCompleted ? <ul id={_id + 'print'} key={_id} className="list-group col-xl-4 col-lg-4 col-md-6 mb-3 p-0 p-md-1 p-lg-2">
                                     <li className="list-group-item list-group-item-primary d-flex justify-content-between align-items-center">
                                         <div>

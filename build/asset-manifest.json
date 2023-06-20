@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/static/css/main.a6667a49.css",
-    "main.js": "/static/js/main.6eea9afb.js",
+    "main.js": "/static/js/main.de05a094.js",
     "static/media/barrio.jpeg": "/static/media/barrio.fe46e004d41ef9472641.jpeg",
     "static/media/centro.jpeg": "/static/media/centro.e8d39be221d8d28baf85.jpeg",
     "static/media/logo.svg": "/static/media/logo.088e5af0cbbb26573725fbf496e419c5.svg",
     "index.html": "/index.html",
     "main.a6667a49.css.map": "/static/css/main.a6667a49.css.map",
-    "main.6eea9afb.js.map": "/static/js/main.6eea9afb.js.map"
+    "main.de05a094.js.map": "/static/js/main.de05a094.js.map"
   },
   "entrypoints": [
     "static/css/main.a6667a49.css",
-    "static/js/main.6eea9afb.js"
+    "static/js/main.de05a094.js"
   ]
 }
