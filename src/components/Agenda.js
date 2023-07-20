@@ -25,7 +25,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
 
         setPedidos(newPedidos);
         // Realizamos el POST a la base de datos
-        axios.post('https://flores-eva-server.onrender.com/api/actualizar', newPedidos[index])
+        axios.post('http://16.171.139.194:3000/api/actualizar', newPedidos[index])
             .then(response => {
                 console.log(response);
             })
@@ -157,7 +157,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
         newPedidos[index].paid = form.paid;
         if (newPedidos[index].deliveryDate) {
             setPedidos(newPedidos)
-            axios.post('https://flores-eva-server.onrender.com/api/editar', newPedidos[index])
+            axios.post('http://16.171.139.194:3000/api/editar', newPedidos[index])
                 .then(response => {
                     console.log(response);
                 })
@@ -186,7 +186,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
             newPedidos[index].delete = true;
             setPedidos(newPedidos);
             // Realizamos el POST a la base de datos
-            axios.post('https://flores-eva-server.onrender.com/api/borrar', newPedidos[index])
+            axios.post('http://16.171.139.194:3000/api/borrar', newPedidos[index])
                 .then(response => {
                     console.log(response);
                 })
@@ -212,7 +212,7 @@ export default function Agenda({ pedidos, setPedidos, title, orderType, shop }) 
 
     useEffect(() => {
         let isMounted = true;
-        fetch('https://flores-eva-server.onrender.com/api/orders')
+        fetch('http://16.171.139.194:3000/api/orders')
             .then(res => res.json())
             .then(data => {
                 if (isMounted) {
