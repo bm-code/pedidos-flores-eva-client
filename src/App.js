@@ -42,7 +42,7 @@ function App() {
       applicationLocalKey: process.env.PUBLIC_KEY
     })
 
-    await axios.post('http://16.171.139.194:3000/subscriptions',
+    await axios.post('https://server.floreseva.com/subscriptions',
       subscription,
       {
         headers: {

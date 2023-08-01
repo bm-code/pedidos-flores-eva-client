@@ -22,7 +22,7 @@ export default function Login({ login, setLogin }) {
     event.preventDefault();
 
     try {
-      const response = await axios.post('http://16.171.139.194:3000/api/login', {
+      const response = await axios.post('https://server.floreseva.com/api/login', {
         username,
         password,
       });
